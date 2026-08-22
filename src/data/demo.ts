@@ -1,3 +1,36 @@
+// ── Energy Logistics Types ──────────────────────────────────────────────
+export type VesselClass = "VLCC" | "Suezmax" | "Aframax" | "Panamax" | "Handysize";
+export type CrudeType = "Arabian Light" | "Arabian Heavy" | "Basrah Medium" | "Basrah Heavy" | "Bonny Light" | "Forcados" | "Iran Heavy" | "Dubai" | "Mars" | "Oman";
+export type ShipmentStatus = "in-transit" | "rerouted" | "docked";
+export type DisruptionZone = "NONE" | "HORMUZ" | "RED_SEA";
+
+export interface EnergyShipment {
+  id: string;
+  vesselName: string;
+  vesselClass: VesselClass;
+  imo: string;
+  origin: string;
+  destination: string;
+  crudeType: CrudeType;
+  payload: string;
+  payloadBarrels: number;
+  status: ShipmentStatus;
+  disruption: DisruptionZone;
+  etaDays: number;
+  etaOriginalDays: number;
+  speed: number;
+  seaTemp: number;
+  freightCost: number;
+  progress: number;
+  lat: number;
+  lng: number;
+  course: number;
+  waypoints: { name: string; lat: number; lng: number; eta: string; passed: boolean }[];
+  cargoTemp: number;
+  draft: number;
+  flag: string;
+}
+
 // ── Types ────────────────────────────────────────────────────────────────
 export type BookingStatus = "pending" | "confirmed" | "in-transit" | "delivered" | "cancelled";
 export type ServiceCategory = "express" | "standard" | "economy" | "freight" | "specialized";
@@ -433,3 +466,256 @@ export const customerStats = {
   memberSince: "March 2025",
   accountTier: "Green Plus",
 };
+
+// ── Energy Logistics Shipments ──────────────────────────────────────────
+export const energyShipments: EnergyShipment[] = [
+  {
+    id: "ES-001",
+    vesselName: "MT Desh Shobha",
+    vesselClass: "VLCC",
+    imo: "IMO 9164452",
+    origin: "Ras Tanura",
+    destination: "Jamnagar Refinery",
+    crudeType: "Arabian Light",
+    payload: "2.0M Barrels (Arabian Light)",
+    payloadBarrels: 2000000,
+    status: "in-transit",
+    disruption: "NONE",
+    etaDays: 3.5,
+    etaOriginalDays: 3.5,
+    speed: 14.2,
+    seaTemp: 28.3,
+    freightCost: 14.20,
+    progress: 72,
+    lat: 21.3,
+    lng: 68.5,
+    course: 125,
+    waypoints: [
+      { name: "Ras Tanura Terminal", lat: 26.64, lng: 50.16, eta: "Aug 18", passed: true },
+      { name: "Strait of Hormuz", lat: 26.56, lng: 56.25, eta: "Aug 19", passed: true },
+      { name: "Arabian Sea", lat: 18.5, lng: 64.0, eta: "Aug 21", passed: true },
+      { name: "Jamnagar Refinery", lat: 22.47, lng: 70.06, eta: "Aug 24", passed: false },
+    ],
+    cargoTemp: 42.1,
+    draft: 22.6,
+    flag: "India",
+  },
+  {
+    id: "ES-002",
+    vesselName: "MT Jag Aparna",
+    vesselClass: "Suezmax",
+    imo: "IMO 9215524",
+    origin: "Basra Terminal",
+    destination: "Paradip Port",
+    crudeType: "Basrah Medium",
+    payload: "1.0M Barrels (Basrah Medium)",
+    payloadBarrels: 1000000,
+    status: "in-transit",
+    disruption: "NONE",
+    etaDays: 5.8,
+    etaOriginalDays: 5.8,
+    speed: 13.8,
+    seaTemp: 27.9,
+    freightCost: 16.50,
+    progress: 48,
+    lat: 16.2,
+    lng: 62.3,
+    course: 98,
+    waypoints: [
+      { name: "Basra Terminal", lat: 30.5, lng: 47.8, eta: "Aug 16", passed: true },
+      { name: "Shatt al-Arab", lat: 29.5, lng: 48.5, eta: "Aug 17", passed: true },
+      { name: "Gulf of Oman", lat: 24.5, lng: 58.5, eta: "Aug 19", passed: true },
+      { name: "Arabian Sea Midpoint", lat: 14.0, lng: 65.0, eta: "Aug 22", passed: false },
+      { name: "Paradip Port", lat: 20.3, lng: 86.6, eta: "Aug 28", passed: false },
+    ],
+    cargoTemp: 38.7,
+    draft: 17.1,
+    flag: "India",
+  },
+  {
+    id: "ES-003",
+    vesselName: "MT Ratna Puja",
+    vesselClass: "Aframax",
+    imo: "IMO 9308776",
+    origin: "Bonny Terminal",
+    destination: "Mangalore SPR",
+    crudeType: "Bonny Light",
+    payload: "1.9M Barrels (Bonny Light)",
+    payloadBarrels: 900000,
+    status: "in-transit",
+    disruption: "NONE",
+    etaDays: 8.2,
+    etaOriginalDays: 8.2,
+    speed: 12.5,
+    seaTemp: 26.1,
+    freightCost: 18.80,
+    progress: 31,
+    lat: 4.5,
+    lng: 35.2,
+    course: 78,
+    waypoints: [
+      { name: "Bonny Terminal", lat: 4.43, lng: 7.15, eta: "Aug 14", passed: true },
+      { name: "Gulf of Guinea", lat: 3.0, lng: 5.0, eta: "Aug 15", passed: true },
+      { name: "Cape of Good Hope", lat: -34.2, lng: 18.5, eta: "Aug 22", passed: false },
+      { name: "Indian Ocean", lat: -10.0, lng: 55.0, eta: "Aug 26", passed: false },
+      { name: "Mangalore SPR", lat: 12.87, lng: 74.84, eta: "Sep 1", passed: false },
+    ],
+    cargoTemp: 35.4,
+    draft: 14.2,
+    flag: "Nigeria",
+  },
+  {
+    id: "ES-004",
+    vesselName: "MT New Diamond",
+    vesselClass: "VLCC",
+    imo: "IMO 9189034",
+    origin: "Ras Laffan",
+    destination: "Mumbai Refinery",
+    crudeType: "Dubai",
+    payload: "2.1M Barrels (Dubai Crude)",
+    payloadBarrels: 2100000,
+    status: "in-transit",
+    disruption: "NONE",
+    etaDays: 4.1,
+    etaOriginalDays: 4.1,
+    speed: 15.1,
+    seaTemp: 29.0,
+    freightCost: 13.90,
+    progress: 65,
+    lat: 20.1,
+    lng: 64.8,
+    course: 112,
+    waypoints: [
+      { name: "Ras Laffan Terminal", lat: 25.93, lng: 51.55, eta: "Aug 17", passed: true },
+      { name: "Strait of Hormuz", lat: 26.56, lng: 56.25, eta: "Aug 18", passed: true },
+      { name: "Arabian Sea", lat: 17.0, lng: 62.0, eta: "Aug 20", passed: true },
+      { name: "Mumbai Refinery", lat: 19.0, lng: 72.85, eta: "Aug 25", passed: false },
+    ],
+    cargoTemp: 44.2,
+    draft: 22.8,
+    flag: "Qatar",
+  },
+  {
+    id: "ES-005",
+    vesselName: "MT South Summit",
+    vesselClass: "Suezmax",
+    imo: "IMO 9407503",
+    origin: "Mediterranean Hub",
+    destination: "Paradip Port",
+    crudeType: "Iran Heavy",
+    payload: "1.0M Barrels (Iran Heavy)",
+    payloadBarrels: 1000000,
+    status: "in-transit",
+    disruption: "NONE",
+    etaDays: 6.0,
+    etaOriginalDays: 6.0,
+    speed: 14.0,
+    seaTemp: 25.5,
+    freightCost: 17.20,
+    progress: 42,
+    lat: 12.5,
+    lng: 48.0,
+    course: 105,
+    waypoints: [
+      { name: "Mediterranean Hub", lat: 35.8, lng: 14.5, eta: "Aug 12", passed: true },
+      { name: "Suez Canal", lat: 30.0, lng: 32.55, eta: "Aug 14", passed: true },
+      { name: "Red Sea", lat: 20.0, lng: 38.0, eta: "Aug 16", passed: true },
+      { name: "Gulf of Aden", lat: 12.5, lng: 45.0, eta: "Aug 18", passed: true },
+      { name: "Paradip Port", lat: 20.3, lng: 86.6, eta: "Aug 28", passed: false },
+    ],
+    cargoTemp: 36.8,
+    draft: 17.0,
+    flag: "Iran",
+  },
+  {
+    id: "ES-006",
+    vesselName: "MT BW Mahanadi",
+    vesselClass: "Aframax",
+    imo: "IMO 9350448",
+    origin: "Fujairah Terminal",
+    destination: "Cochin Refinery",
+    crudeType: "Mars",
+    payload: "0.85M Barrels (Mars Blend)",
+    payloadBarrels: 850000,
+    status: "in-transit",
+    disruption: "NONE",
+    etaDays: 2.1,
+    etaOriginalDays: 2.1,
+    speed: 13.5,
+    seaTemp: 28.8,
+    freightCost: 15.60,
+    progress: 85,
+    lat: 13.8,
+    lng: 72.2,
+    course: 175,
+    waypoints: [
+      { name: "Fujairah Terminal", lat: 25.12, lng: 56.33, eta: "Aug 20", passed: true },
+      { name: "Gulf of Oman", lat: 24.5, lng: 58.5, eta: "Aug 20", passed: true },
+      { name: "Arabian Sea", lat: 16.0, lng: 68.0, eta: "Aug 22", passed: true },
+      { name: "Cochin Refinery", lat: 9.93, lng: 76.27, eta: "Aug 24", passed: false },
+    ],
+    cargoTemp: 40.5,
+    draft: 13.8,
+    flag: "Liberia",
+  },
+  {
+    id: "ES-007",
+    vesselName: "MT Gemini Spirit",
+    vesselClass: "Panamax",
+    imo: "IMO 9418219",
+    origin: "Basra Terminal",
+    destination: "Paradip Port",
+    crudeType: "Basrah Heavy",
+    payload: "0.6M Barrels (Basrah Heavy)",
+    payloadBarrels: 600000,
+    status: "docked",
+    disruption: "NONE",
+    etaDays: 0,
+    etaOriginalDays: 7.5,
+    speed: 0,
+    seaTemp: 29.1,
+    freightCost: 19.40,
+    progress: 100,
+    lat: 20.3,
+    lng: 86.6,
+    course: 0,
+    waypoints: [
+      { name: "Basra Terminal", lat: 30.5, lng: 47.8, eta: "Aug 10", passed: true },
+      { name: "Paradip Port", lat: 20.3, lng: 86.6, eta: "Aug 19", passed: true },
+    ],
+    cargoTemp: 33.2,
+    draft: 12.5,
+    flag: "India",
+  },
+  {
+    id: "ES-008",
+    vesselName: "MT Pacific Voyager",
+    vesselClass: "Suezmax",
+    imo: "IMO 9250423",
+    origin: "Ras Tanura",
+    destination: "Visakhapatnam Refinery",
+    crudeType: "Oman",
+    payload: "1.0M Barrels (Oman Crude)",
+    payloadBarrels: 1000000,
+    status: "in-transit",
+    disruption: "NONE",
+    etaDays: 5.2,
+    etaOriginalDays: 5.2,
+    speed: 14.8,
+    seaTemp: 27.6,
+    freightCost: 15.10,
+    progress: 55,
+    lat: 17.8,
+    lng: 65.2,
+    course: 108,
+    waypoints: [
+      { name: "Ras Tanura Terminal", lat: 26.64, lng: 50.16, eta: "Aug 16", passed: true },
+      { name: "Strait of Hormuz", lat: 26.56, lng: 56.25, eta: "Aug 17", passed: true },
+      { name: "Arabian Sea", lat: 15.0, lng: 63.0, eta: "Aug 20", passed: true },
+      { name: "Visakhapatnam", lat: 17.69, lng: 83.22, eta: "Aug 27", passed: false },
+    ],
+    cargoTemp: 41.3,
+    draft: 17.2,
+    flag: "Singapore",
+  },
+];

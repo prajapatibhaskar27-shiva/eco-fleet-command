@@ -14,15 +14,19 @@ import ShipmentHistory from "@/components/fleet/ShipmentTracker";
 import Notifications from "@/components/fleet/AlertsPanel";
 import Schedule from "@/components/fleet/Schedule";
 import Checkout from "@/components/fleet/Checkout";
+import ActiveShipments from "@/components/ActiveShipments";
+import DisruptionAwareShipments from "@/components/ActiveShipmentsWrapper";
 import { Plus } from "lucide-react";
 import { customerStats, notifications as demoNotifications } from "@/data/demo";
+import { DisruptionProvider, useDisruption } from "@/contexts/DisruptionContext";
+import type { DisruptionZone } from "@/data/demo";
 import type { Booking, CatalogItem } from "@/data/demo";
 import {
   Globe, Package, Search, BarChart3, Sparkles, Clock, Bell, Calendar,
-  LogOut, Leaf, ChevronLeft, ChevronRight, Menu, X,
+  LogOut, Leaf, ChevronLeft, ChevronRight, Menu, X, Ship, AlertTriangle,
 } from "lucide-react";
 
-type View = "dashboard" | "bookings" | "detail" | "catalog" | "schedule" | "checkout" | "history" | "notifications" | "ecopilot" | "map";
+type View = "dashboard" | "bookings" | "detail" | "catalog" | "schedule" | "checkout" | "history" | "notifications" | "ecopilot" | "map" | "shipments";
 
 const navItems: { key: View; label: string; icon: any }[] = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -30,6 +34,7 @@ const navItems: { key: View; label: string; icon: any }[] = [
   { key: "catalog", label: "Catalog", icon: Search },
   { key: "schedule", label: "New Booking", icon: Calendar },
   { key: "map", label: "Tracking Map", icon: Globe },
+  { key: "shipments", label: "Shipments", icon: Ship },
   { key: "history", label: "History", icon: Clock },
   { key: "notifications", label: "Notifications", icon: Bell },
   { key: "ecopilot", label: "EcoPilot", icon: Sparkles },
@@ -141,7 +146,7 @@ function TopBar({ view, setView, onMenuToggle }: { view: View; setView: (v: View
     dashboard: "Dashboard", bookings: "My Bookings", detail: "Booking Details",
     catalog: "Service Catalog", schedule: "New Booking", checkout: "Checkout",
     history: "Shipment History", notifications: "Notifications", ecopilot: "EcoPilot",
-    map: "Tracking Map",
+    map: "Tracking Map", shipments: "Energy Shipments",
   };
 
   return (
@@ -183,7 +188,7 @@ function TopBar({ view, setView, onMenuToggle }: { view: View; setView: (v: View
 }
 
 /* ── Dashboard ──────────────────────────────────────────────────────────── */
-export default function Dashboard() {
+function DashboardInner() {
   const [view, setView] = useState<View>("dashboard");
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -221,6 +226,7 @@ export default function Dashboard() {
       case "history": return <ShipmentHistory />;
       case "notifications": return <Notifications />;
       case "ecopilot": return <EcoPilot />;
+      case "shipments": return <DisruptionAwareShipments />;
       default: return null;
     }
   };
@@ -239,5 +245,13 @@ export default function Dashboard() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <DisruptionProvider>
+      <DashboardInner />
+    </DisruptionProvider>
   );
 }
