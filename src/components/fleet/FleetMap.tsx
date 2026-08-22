@@ -133,16 +133,16 @@ export default function ShipmentMap({
   ];
 
   return (
-    <div className="h-full flex flex-col bg-white rounded-2xl border border-gray-200 overflow-hidden">
+    <div className="h-full flex flex-col bg-white dark:bg-[#1a1f2e] dark:border-white/[0.06] rounded-2xl border border-gray-200 overflow-hidden transition-colors duration-300">
       {/* ── Top controls ─────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 py-3 border-b border-gray-100">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-white/[0.06]">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center">
             <MapPin className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h3 className="text-[14px] font-bold text-gray-900">Fleet Tracking Map</h3>
-            <p className="text-[11px] text-gray-500">Live locations across all shipments</p>
+            <h3 className="text-[14px] font-bold text-gray-900 dark:text-gray-100">Fleet Tracking Map</h3>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">Live locations across all shipments</p>
           </div>
         </div>
 
@@ -154,7 +154,7 @@ export default function ShipmentMap({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search locations, bookings…"
-            className="w-full pl-8 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[12px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all"
+            className="w-full pl-8 pr-3 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.08] rounded-xl text-[12px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all"
           />
           {search && (
             <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -174,15 +174,15 @@ export default function ShipmentMap({
       </div>
 
       {/* ── Filter tabs ──────────────────────────────────────────────── */}
-      <div className="flex items-center gap-1.5 px-4 py-2 border-b border-gray-100 overflow-x-auto">
+      <div className="flex items-center gap-1.5 px-4 py-2 border-b border-gray-100 dark:border-white/[0.06] overflow-x-auto">
         {filters.map((f) => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all ${
               filter === f.key
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"
+                ? "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20"
+                : "bg-gray-50 dark:bg-white/[0.04] text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-white/[0.08] hover:bg-gray-100 dark:hover:bg-white/[0.08]"
             }`}
           >
             <span>{f.icon}</span>
@@ -296,16 +296,16 @@ export default function ShipmentMap({
 
       {/* ── Location detail panel ────────────────────────────────────── */}
       {selectedLocation && (
-        <div className="px-4 py-3 border-t border-gray-100 bg-gray-50 flex items-start gap-3">
+        <div className="px-4 py-3 border-t border-gray-100 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.03] flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shrink-0">
             <MapPin className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
-              <p className="text-[13px] font-bold text-gray-900 truncate">{selectedLocation.name}</p>
+              <p className="text-[13px] font-bold text-gray-900 dark:text-gray-100 truncate">{selectedLocation.name}</p>
               <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${statusColors[selectedLocation.status]}`}>{selectedLocation.status}</span>
             </div>
-            <p className="text-[11px] text-gray-500">{selectedLocation.detail}</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">{selectedLocation.detail}</p>
             <p className="text-[10px] text-gray-400 mt-0.5 font-mono">{selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}</p>
           </div>
           <button onClick={() => setSelectedLocation(null)} className="text-gray-400 hover:text-gray-600 shrink-0">
@@ -315,7 +315,7 @@ export default function ShipmentMap({
       )}
 
       {/* ── Stats footer ────────────────────────────────────────────── */}
-      <div className="px-4 py-2.5 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-500">
+      <div className="px-4 py-2.5 border-t border-gray-100 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1"><Truck className="w-3 h-3 text-emerald-500" /> {mapLocations.filter((l) => l.type === "truck").length} vehicles</span>
           <span className="flex items-center gap-1"><Anchor className="w-3 h-3 text-blue-500" /> {mapLocations.filter((l) => l.type === "ship").length} vessels</span>

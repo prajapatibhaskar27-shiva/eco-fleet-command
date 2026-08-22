@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router";
@@ -112,14 +113,14 @@ function Sidebar({
     <>
       {/* Desktop sidebar */}
       <motion.aside
-        className={`hidden lg:flex flex-col h-screen bg-[#0f1729] transition-all relative shrink-0 ${collapsed ? "w-[68px]" : "w-[232px]"}`}
+        className={`hidden lg:flex flex-col h-screen bg-[#0f1729] dark:bg-[#0a0f1a] transition-all relative shrink-0 ${collapsed ? "w-[68px]" : "w-[232px]"}`}
         animate={{ width: collapsed ? 68 : 232 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
         {navContent}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-gray-400 hover:text-emerald-600 hover:border-emerald-300 transition-all z-10"
+          className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center text-gray-400 hover:text-emerald-600 hover:border-emerald-300 transition-all z-10"
         >
           {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
         </button>
@@ -130,7 +131,7 @@ function Sidebar({
         {mobileOpen && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setMobileOpen(false)} />
-            <motion.aside initial={{ x: -240 }} animate={{ x: 0 }} exit={{ x: -240 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="fixed left-0 top-0 bottom-0 w-[232px] bg-[#0f1729] z-50 lg:hidden flex flex-col">
+            <motion.aside initial={{ x: -240 }} animate={{ x: 0 }} exit={{ x: -240 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="fixed left-0 top-0 bottom-0 w-[232px] bg-[#0f1729] dark:bg-[#0a0f1a] z-50 lg:hidden flex flex-col">
               {navContent}
             </motion.aside>
           </>
@@ -142,6 +143,7 @@ function Sidebar({
 
 /* ── Top Bar ────────────────────────────────────────────────────────────── */
 function TopBar({ view, setView, onMenuToggle }: { view: View; setView: (v: View) => void; onMenuToggle: () => void }) {
+  const { theme, toggle } = useTheme();
   const titles: Record<View, string> = {
     dashboard: "Dashboard", bookings: "My Bookings", detail: "Booking Details",
     catalog: "Service Catalog", schedule: "New Booking", checkout: "Checkout",
@@ -150,31 +152,47 @@ function TopBar({ view, setView, onMenuToggle }: { view: View; setView: (v: View
   };
 
   return (
-    <div className="h-16 border-b border-gray-200/80 bg-white flex items-center justify-between px-6">
+    <div className="h-16 border-b border-gray-200/80 dark:border-white/[0.06] bg-white dark:bg-[#111827] flex items-center justify-between px-4 sm:px-6 transition-colors duration-300">
       <div className="flex items-center gap-3">
-        <button onClick={onMenuToggle} className="lg:hidden w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
+        <button onClick={onMenuToggle} className="lg:hidden w-9 h-9 rounded-lg bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
           <Menu className="w-5 h-5" />
         </button>
-        <h1 className="text-[15px] font-semibold text-gray-900">{titles[view]}</h1>
+        <h1 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100">{titles[view]}</h1>
       </div>
-      <div className="flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-5 text-[13px]">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="hidden sm:flex items-center gap-4 sm:gap-5 text-[13px]">
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-emerald-600 font-semibold">{customerStats.activeShipments} active</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{customerStats.activeShipments} active</span>
           </div>
-          <div className="flex items-center gap-1.5 text-gray-500">
+          <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
             <Package className="w-3.5 h-3.5" />
             {customerStats.totalBookings} bookings
           </div>
-          <div className="flex items-center gap-1.5 text-gray-500">
+          <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
             <Leaf className="w-3.5 h-3.5 text-emerald-500" />
             {customerStats.co2Saved} kg saved
           </div>
         </div>
+
+        {/* ── Theme Toggle ────────────────────────────────────────── */}
+        <button
+          onClick={toggle}
+          className="relative w-[68px] h-[34px] rounded-full border border-gray-200 dark:border-white/[0.12] bg-gray-100 dark:bg-white/[0.06] hover:bg-gray-200 dark:hover:bg-white/[0.1] transition-all duration-300 flex items-center px-1 group"
+          aria-label={`Switch to ${theme === "dark" ? "bright" : "dark"} mode`}
+        >
+          <motion.div
+            className="w-[26px] h-[26px] rounded-full bg-white dark:bg-emerald-500 shadow-md flex items-center justify-center text-[14px]"
+            animate={{ x: theme === "dark" ? 34 : 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          >
+            {theme === "dark" ? "🌙" : "☀️"}
+          </motion.div>
+        </button>
+
         <button
           onClick={() => setView("schedule")}
           className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 text-white text-[13px] font-semibold hover:bg-emerald-600 active:bg-emerald-700 shadow-sm shadow-emerald-500/20 transition-all duration-150"
@@ -232,7 +250,7 @@ function DashboardInner() {
   };
 
   return (
-    <div className="h-screen flex bg-gray-50 text-foreground overflow-hidden">
+    <div className="h-screen flex bg-gray-50 dark:bg-[#111827] text-foreground overflow-hidden transition-colors duration-300">
       <Sidebar view={view} setView={setView} collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar view={view} setView={setView} onMenuToggle={() => setMobileMenuOpen(true)} />
