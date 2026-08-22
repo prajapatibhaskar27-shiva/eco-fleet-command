@@ -1,272 +1,126 @@
-## Overview
+# ⚡ FluxRoute | Energy Resilience & Maritime Digital Twin
 
-This project uses the following tech stack:
-- Vite
-- Typescript
-- React Router v7 (all imports from `react-router` instead of `react-router-dom`)
-- React 19 (for frontend components)
-- Tailwind v4 (for styling)
-- Shadcn UI (for UI components library)
-- Lucide Icons (for icons)
-- Convex (for backend & database)
-- Convex Auth (for authentication)
-- Framer Motion (for animations)
-- Three js (for 3d models)
+<p align="center">
+  <img src="public/logo.svg" alt="FluxRoute Logo" width="100" />
+</p>
 
-All relevant files live in the 'src' directory.
+<p align="center">
+  <strong>AI-Driven Maritime Supply Chain Resilience, Geopolitical Disruption Simulator & Strategic Petroleum Reserve (SPR) Orchestrator</strong>
+</p>
 
-Use bun for the package manager.
+<p align="center">
+  <img src="https://img.shields.io/badge/Target-Problem_Statement_1-amber?style=for-the-badge&logo=target" alt="PS1" />
+  <img src="https://img.shields.io/badge/React-18.3-blue?style=for-the-badge&logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5.5-3178c6?style=for-the-badge&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-5.4-646cff?style=for-the-badge&logo=vite" alt="Vite" />
+  <img src="https://img.shields.io/badge/TailwindCSS-3.4-38bdf8?style=for-the-badge&logo=tailwindcss" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Convex-Backend-ff5252?style=for-the-badge&logo=convex" alt="Convex" />
+</p>
 
-## Setup
+---
 
-This project is set up already and running on a cloud environment, as well as a convex development in the sandbox.
+## 📌 Executive Summary
 
-## Environment Variables
+India imports **~87.8% of its domestic crude oil requirements**, with a major share transiting through vulnerable maritime chokepoints including the **Strait of Hormuz** and the **Bab-el-Mandeb / Red Sea corridor**. National underground caverns (Strategic Petroleum Reserves located in Mangalore, Padur, and Visakhapatnam) provide roughly **9.5 days of emergency buffer cover**.
 
-The project is set up with project specific CONVEX_DEPLOYMENT and VITE_CONVEX_URL environment variables on the client side.
+**FluxRoute** bridges maritime geopolitical intelligence with end-to-end transport management across two distinct operational domains:
 
-The convex server has a separate set of environment variables that are accessible by the convex backend.
+* **Maritime Energy Resilience & Disruption Simulator (PS1):** An interactive digital twin that simulates chokepoint blockades, models dynamic Strategic Petroleum Reserve (SPR) drawdowns, evaluates Cape of Good Hope rerouting latencies, and orchestrates alternative sweet crude procurement.
+* **Domestic Fleet & Multi-Objective Freight Routing:** An algorithmic dispatch hub balancing high-efficiency highway routes with low-emission corridors, incorporating EV fleet allocation and carbon reduction metrics.
 
-Currently, these variables include auth-specific keys: JWKS, JWT_PRIVATE_KEY, and SITE_URL.
+---
 
+## 🚀 Core Capabilities
 
-# Using Authentication (Important!)
+### 🌊 1. Maritime Digital Twin & Chokepoint Disruption Simulator
+* **Interactive Sea Lane Visualization:** Real-time visual tracking of international crude transport lanes connecting Middle Eastern, West African, and Far-Eastern hubs to Indian energy ports (Jamnagar, Paradip, Vadinar).
+* **Dynamic Geopolitical Crisis Modes:**
+  * 🔴 **Strait of Hormuz Blockade:** Models a severe supply crunch, activates Cape of Good Hope contingency diversions (+14 days transit), and triggers an automated 1.1M bpd drawdown from Padur and Mangalore SPR caverns.
+  * 🟡 **Red Sea Escalation:** Automatically reallocates Mediterranean orders to West African sweet crude (Bonny Light/Forcados) while accounting for real-time freight and insurance surcharges.
+* **National Energy Resilience Index:** Real-time score evaluating import dependency ratios, current buffer capacity, and vessel transit latency.
 
-You must follow these conventions when using authentication.
+### 🚢 2. Live Cargo & Supertanker (VLCC) Tracker
+* **Supertanker Fleet Telemetry:** Instant visibility into vessel names, deadweight tonnage, crude grades (Arabian Light, Basrah Medium, Bonny Light), and dynamic countdowns for Arrival Estimates (ETA).
+* **Automated Risk Rerouting:** Real-time route reassessment and penalty calculations applied whenever transit corridors enter hazardous alert zones.
 
-## Auth is already set up.
+### ⚡ 3. Adaptive Procurement Orchestrator
+* **Ranked Alternative Sourcing:** Quantitative trade-off comparisons across global crude blends based on quality compatibility, transit times, and per-barrel cost deltas.
+* **National Contingency Directives:** Instant compilation and export of operational contingency plans, vessel audit logs, and strategic inventory reports.
 
-All convex authentication functions are already set up. The auth currently uses email OTP and anonymous users, but can support more.
+### 🚛 4. Domestic Fleet Management Engine
+* **Multi-Objective Optimizer:** Evaluates fastest commercial routes alongside eco-optimized bypass paths to reduce overall transit emissions.
+* **Fleet Telemetry & Carbon Accounting:** Live telemetry monitoring, EV cargo matching, payload tracking, and ESG compliance analytics.
 
-The email OTP configuration is defined in `src/convex/auth/emailOtp.ts`. DO NOT MODIFY THIS FILE.
+---
 
-Also, DO NOT MODIFY THESE AUTH FILES: `src/convex/auth.config.ts` and `src/convex/auth.ts`.
+## 🛠️ Technology Stack
 
-## Using Convex Auth on the backend
+| Layer | Technologies & Libraries |
+| :--- | :--- |
+| **Frontend Framework** | React 18, TypeScript, Vite |
+| **Styling & Design System** | Tailwind CSS, Radix UI Primitives, Lucide React Icons |
+| **Routing & Navigation** | TanStack Router, React Context API |
+| **Realtime Backend & State** | Convex Cloud Platform |
+| **Geospatial & Vector Visuals**| Vector SVG Digital Twin, Leaflet / Maps API |
 
-On the `src/convex/users.ts` file, you can use the `getCurrentUser` function to get the current user's data.
+---
 
-## Using Convex Auth on the frontend
+## 📂 Repository Structure
 
-The `/auth` page is already set up to use auth. Navigate to `/auth` for all log in / sign up sequences.
+* **`public/`** — Static application assets, SVG icons, and web app manifests.
+* **`src/components/`**
+  * `ActiveShipments.tsx` — Live crude cargo cards and tanker telemetry tracking.
+  * `MaritimeMap.tsx` — Vector-rendered global sea lanes, chokepoint zones, and dynamic rerouting paths.
+  * `MaritimeOptimizer.tsx` — Procurement recommendations, SPR drawdown metrics, and contingency export.
+  * `fleet/` — Domestic logistics, route optimization engines, and vehicle lists.
+  * `ui/` — Accessible design system components and UI primitives.
+* **`src/contexts/`** — Disruption scenario state providers and theme contexts.
+* **`src/convex/`** — Backend data schemas, user authentication, and persistent data tables.
+* **`src/data/`** — Curated vessel profiles, maritime corridors, and SPR facility datasets.
+* **`src/routes/`** — Dashboard views featuring the integrated multi-modal switcher.
 
-You MUST use this hook to get user data. Never do this yourself without the hook:
-```typescript
-import { useAuth } from "@/hooks/use-auth";
+---
 
-const { isLoading, isAuthenticated, user, signIn, signOut } = useAuth();
+## ⚡ Setup & Execution
+
+### Prerequisites
+* Node.js v20.12.0 or newer (v22 LTS recommended)
+* npm or bun package manager
+
+### 1. Clone & Enter Repository
+```
+git clone [https://github.com/your-org/fluxroute-energy-twin.git](https://github.com/your-org/fluxroute-energy-twin.git)
+cd fluxroute-energy-twin
 ```
 
-## Protected Routes
-
-The starter `/dashboard` route is protected with `RequireAuth`, which sends
-signed-out users to `/auth?returnTo=<current route>`. Extend that page for the
-product's authenticated experience, and reuse `RequireAuth` when adding another
-protected route.
-
-## Auth Page
-
-The auth page is defined in `src/pages/Auth.tsx`. Send sign-in and sign-up actions
-to `/auth`.
-
-## Authorization
-
-You can perform authorization checks on the frontend and backend.
-
-On the frontend, you can use the `useAuth` hook to get the current user's data and authentication state.
-
-You should also be protecting queries, mutations, and actions at the base level, checking for authorization securely.
-
-## Adding a redirect after auth
-
-The `/auth` route in `src/main.tsx` redirects to `/dashboard` by default. If the
-product's main authenticated route is different, update `redirectAfterAuth` to
-that route. A validated same-origin `returnTo` query parameter takes priority so
-users can resume the protected page they originally requested. Never leave an
-authenticated product redirecting back to the public landing page.
-
-## Complete authenticated products
-
-When the requested product implies accounts, a workspace, a dashboard, or other
-signed-in functionality, the task is not complete with only a landing page and
-auth form. Build the main authenticated experience, protect its route, and verify
-that signing in reaches it.
-
-# Frontend Conventions
-
-You will be using the Vite frontend with React 19, Tailwind v4, and Shadcn UI.
-
-Generally, pages should be in the `src/pages` folder, and components should be in the `src/components` folder.
-
-Shadcn primitives are located in the `src/components/ui` folder and should be used by default.
-
-## Page routing
-
-Your page component should go under the `src/pages` folder.
-
-When adding a page, update the react router configuration in `src/main.tsx` to include the new route you just added.
-
-## Shad CN conventions
-
-Follow these conventions when using Shad CN components, which you should use by default.
-- Remember to use "cursor-pointer" to make the element clickable
-- For title text, use the "tracking-tight font-bold" class to make the text more readable
-- Always make apps MOBILE RESPONSIVE. This is important
-- AVOID NESTED CARDS. Try and not to nest cards, borders, components, etc. Nested cards add clutter and make the app look messy.
-- AVOID SHADOWS. Avoid adding any shadows to components. stick with a thin border without the shadow.
-- Avoid skeletons; instead, use the loader2 component to show a spinning loading state when loading data.
-
-
-## Landing Pages
-
-You must always create good-looking designer-level styles to your application. 
-- Make it well animated and fit a certain "theme", ie neo brutalist, retro, neumorphism, glass morphism, etc
-
-Use known images and emojis from online.
-
-If the user is logged in already, show the get started button to say "Dashboard" or "Profile" instead to take them there.
-
-## Responsiveness and formatting
-
-Make sure pages are wrapped in a container to prevent the width stretching out on wide screens. Always make sure they are centered aligned and not off-center.
-
-Always make sure that your designs are mobile responsive. Verify the formatting to ensure it has correct max and min widths as well as mobile responsiveness.
-
-- Always create sidebars for protected dashboard pages and navigate between pages
-- Always create navbars for landing pages
-- On these bars, the created logo should be clickable and redirect to the index page
-
-## Animating with Framer Motion
-
-You must add animations to components using Framer Motion. It is already installed and configured in the project.
-
-To use it, import the `motion` component from `framer-motion` and use it to wrap the component you want to animate.
-
-
-### Other Items to animate
-- Fade in and Fade Out
-- Slide in and Slide Out animations
-- Rendering animations
-- Button clicks and UI elements
-
-Animate for all components, including on landing page and app pages.
-
-## Three JS Graphics
-
-Your app comes with three js by default. You can use it to create 3D graphics for landing pages, games, etc.
-
-
-## Colors
-
-You can override colors in: `src/index.css`
-
-This uses the oklch color format for tailwind v4.
-
-Always use these color variable names.
-
-Make sure all ui components are set up to be mobile responsive and compatible with both light and dark mode.
-
-Set theme using `dark` or `light` variables at the parent className.
-
-## Styling and Theming
-
-When changing the theme, always change the underlying theme of the shad cn components app-wide under `src/components/ui` and the colors in the index.css file.
-
-Avoid hardcoding in colors unless necessary for a use case, and properly implement themes through the underlying shad cn ui components.
-
-When styling, ensure buttons and clickable items have pointer-click on them (don't by default).
-
-Always follow a set theme style and ensure it is tuned to the user's liking.
-
-## Toasts
-
-You should always use toasts to display results to the user, such as confirmations, results, errors, etc.
-
-Use the shad cn Sonner component as the toaster. For example:
-
+### 2. Install Project Dependencies
 ```
-import { toast } from "sonner"
-
-import { Button } from "@/components/ui/button"
-export function SonnerDemo() {
-  return (
-    <Button
-      variant="outline"
-      onClick={() =>
-        toast("Event has been created", {
-          description: "Sunday, December 03, 2023 at 9:00 AM",
-          action: {
-            label: "Undo",
-            onClick: () => console.log("Undo"),
-          },
-        })
-      }
-    >
-      Show Toast
-    </Button>
-  )
-}
+npm install
 ```
 
-Remember to import { toast } from "sonner". Usage: `toast("Event has been created.")`
-
-## Dialogs
-
-Always ensure your larger dialogs have a scroll in its content to ensure that its content fits the screen size. Make sure that the content is not cut off from the screen.
-
-Ideally, instead of using a new page, use a Dialog instead. 
-
-# Using the Convex backend
-
-You will be implementing the convex backend. Follow your knowledge of convex and the documentation to implement the backend.
-
-## The Convex Schema
-
-You must correctly follow the convex schema implementation.
-
-The schema is defined in `src/convex/schema.ts`.
-
-Do not include the `_id` and `_creationTime` fields in your queries (it is included by default for each table).
-Do not index `_creationTime` as it is indexed for you. Never have duplicate indexes.
-
-
-## Convex Actions: Using CRUD operations
-
-When running anything that involves external connections, you must use a convex action with "use node" at the top of the file.
-
-You cannot have queries or mutations in the same file as a "use node" action file. Thus, you must use pre-built queries and mutations in other files.
-
-You can also use the pre-installed internal crud functions for the database:
-
-```ts
-// in convex/users.ts
-import { crud } from "convex-helpers/server/crud";
-import schema from "./schema.ts";
-
-export const { create, read, update, destroy } = crud(schema, "users");
-
-// in some file, in an action:
-const user = await ctx.runQuery(internal.users.read, { id: userId });
-
-await ctx.runMutation(internal.users.update, {
-  id: userId,
-  patch: {
-    status: "inactive",
-  },
-});
+### 3. Setup Environment Variables
+```
+cp .env.example .env
 ```
 
+### 4. Launch Development Server
+```
+npm run dev
+```
 
-## Common Convex Mistakes To Avoid
+Access the application locally at `http://localhost:5173`.
 
-When using convex, make sure:
-- Document IDs are referenced as `_id` field, not `id`.
-- Document ID types are referenced as `Id<"TableName">`, not `string`.
-- Document object types are referenced as `Doc<"TableName">`.
-- Keep schemaValidation to false in the schema file.
-- You must correctly type your code so that it passes the type checker.
-- You must handle null / undefined cases of your convex queries for both frontend and backend, or else it will throw an error that your data could be null or undefined.
-- Always use the `@/folder` path, with `@/convex/folder/file.ts` syntax for importing convex files.
-- This includes importing generated files like `@/convex/_generated/server`, `@/convex/_generated/api`
-- Remember to import functions like useQuery, useMutation, useAction, etc. from `convex/react`
-- NEVER have return type validators.
+---
+
+## 🎮 Hackathon Presentation Guide (2-Minute Demo)
+
+* **Baseline Energy Health (0:00 - 0:30):** Present the live maritime twin displaying nominal transit through the Persian Gulf and standard 9.5-day SPR reserve coverage.
+* **Simulate Hormuz Crisis (0:30 - 1:00):** Activate the Hormuz Blockade simulation. Demonstrate the immediate route rerouting around the Cape of Good Hope, the flashing hazard markers, and the drop in national reserves to 4.1 days.
+* **AI Procurement & Sourcing (1:00 - 1:30):** Review the automated procurement engine ranking alternative crude suppliers and show the one-click contingency export.
+* **Domestic Synergy (1:30 - 2:00):** Switch to the Domestic Fleet mode to demonstrate multi-modal freight coordination from coastal terminals to inland destinations.
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for complete details.
