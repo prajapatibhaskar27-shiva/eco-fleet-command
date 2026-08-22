@@ -455,6 +455,45 @@ export const notifications: Notification[] = [
   },
 ];
 
+// ── Map Locations ────────────────────────────────────────────────────────
+export interface MapLocation {
+  id: string;
+  name: string;
+  type: "truck" | "ship" | "warehouse" | "port" | "pickup" | "delivery";
+  lat: number;
+  lng: number;
+  status: "active" | "idle" | "scheduled" | "delivered";
+  detail: string;
+  route?: { lat: number; lng: number }[];
+}
+
+export const mapLocations: MapLocation[] = [
+  // Active trucks
+  { id: "ml-1", name: "Eco Express Van", type: "truck", lat: 39.2, lng: -121.0, status: "active", detail: "BK-4821 · SF → Portland · 82% · ETA 3.5h", route: [{ lat: 37.7749, lng: -122.4194 }, { lat: 39.2, lng: -121.0 }, { lat: 42.5, lng: -122.0 }, { lat: 45.5152, lng: -122.6784 }] },
+  { id: "ml-2", name: "Green Freight Truck", type: "truck", lat: 35.0, lng: -101.5, status: "active", detail: "BK-4798 · Austin → Denver · 45% · ETA 18h", route: [{ lat: 30.2672, lng: -97.7431 }, { lat: 32.0, lng: -100.0 }, { lat: 35.0, lng: -101.5 }, { lat: 39.7392, lng: -104.9903 }] },
+  { id: "ml-3", name: "Standard Eco Van", type: "truck", lat: 43.0, lng: -122.0, status: "active", detail: "BK-4785 · Seattle → SF · 15% · ETA 9h", route: [{ lat: 47.6062, lng: -122.3321 }, { lat: 43.0, lng: -122.0 }, { lat: 40.0, lng: -122.0 }, { lat: 37.7749, lng: -122.4194 }] },
+  { id: "ml-4", name: "Priority Rush Van", type: "truck", lat: 27.5, lng: -80.5, status: "active", detail: "BK-4720 · Miami → Orlando · 60% · ETA 2h", route: [{ lat: 25.7617, lng: -80.1918 }, { lat: 27.5, lng: -80.5 }, { lat: 28.5383, lng: -81.3792 }] },
+  // Warehouses
+  { id: "wh-1", name: "SF Distribution Hub", type: "warehouse", lat: 37.7749, lng: -122.4194, status: "active", detail: "Primary West Coast hub · 248 shipments/day" },
+  { id: "wh-2", name: "Chicago Logistics Center", type: "warehouse", lat: 41.8781, lng: -87.6298, status: "active", detail: "Midwest hub · 312 shipments/day" },
+  { id: "wh-3", name: "Dallas Fulfillment Center", type: "warehouse", lat: 32.7767, lng: -96.7970, status: "active", detail: "South Central hub · 190 shipments/day" },
+  { id: "wh-4", name: "NYC Distribution Hub", type: "warehouse", lat: 40.7128, lng: -74.0060, status: "active", detail: "East Coast hub · 410 shipments/day" },
+  // Ports (from seaPorts subset)
+  { id: "pt-1", name: "Mumbai Port", type: "port", lat: 18.95, lng: 72.84, status: "active", detail: "Major Container · India" },
+  { id: "pt-2", name: "Singapore Port", type: "port", lat: 1.26, lng: 103.82, status: "active", detail: "Global Hub · Singapore" },
+  { id: "pt-3", name: "Los Angeles Port", type: "port", lat: 33.74, lng: -118.27, status: "active", detail: "US West Coast · USA" },
+  { id: "pt-4", name: "Rotterdam Port", type: "port", lat: 51.9, lng: 4.48, status: "active", detail: "EU Gateway · Netherlands" },
+  { id: "pt-5", name: "Dubai (Jebel Ali)", type: "port", lat: 24.98, lng: 55.02, status: "active", detail: "ME Hub · UAE" },
+  // Active ships
+  { id: "sh-1", name: "MV Pacific Guardian", type: "ship", lat: 8.5, lng: 92.0, status: "active", detail: "SC-001 · Mumbai → Singapore · 62% · ETA 3d", route: [{ lat: 18.95, lng: 72.84 }, { lat: 12.0, lng: 80.0 }, { lat: 8.5, lng: 92.0 }, { lat: 1.26, lng: 103.82 }] },
+  { id: "sh-2", name: "MV Green Carrier", type: "ship", lat: -5.0, lng: 115.0, status: "active", detail: "SC-002 · Singapore → Shanghai · 28% · ETA 9d", route: [{ lat: 1.26, lng: 103.82 }, { lat: -2.0, lng: 108.0 }, { lat: -5.0, lng: 115.0 }, { lat: 10.0, lng: 120.0 }, { lat: 31.23, lng: 121.47 }] },
+  // Pickup / delivery points
+  { id: "pk-1", name: "Origin: San Francisco", type: "pickup", lat: 37.7749, lng: -122.4194, status: "active", detail: "BK-4821 pickup location" },
+  { id: "dl-1", name: "Dest: Portland, OR", type: "delivery", lat: 45.5152, lng: -122.6784, status: "scheduled", detail: "BK-4821 delivery destination" },
+  { id: "pk-2", name: "Origin: Austin, TX", type: "pickup", lat: 30.2672, lng: -97.7431, status: "active", detail: "BK-4798 pickup location" },
+  { id: "dl-2", name: "Dest: Denver, CO", type: "delivery", lat: 39.7392, lng: -104.9903, status: "scheduled", detail: "BK-4798 delivery destination" },
+];
+
 // ── Customer Stats ───────────────────────────────────────────────────────
 // ── India Shipping ──────────────────────────────────────────────────────
 export interface IndiaCity {
