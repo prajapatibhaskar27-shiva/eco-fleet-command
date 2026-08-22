@@ -526,6 +526,7 @@ export const shipmentVehicles: ShipmentVehicle[] = [
   { id: "ev-truck", name: "EV Heavy Truck", icon: "🚚", capacity: "Up to 5,000 kg", speed: "Regional: 12–24h", pricePerKm: 10, co2PerKm: 0, description: "Full-electric long-haul. Zero tailpipe emissions for heavy cargo." },
   { id: "rail", name: "Green Rail", icon: "🚂", capacity: "Up to 20,000 kg", speed: "Pan-India: 2–5d", pricePerKm: 3, co2PerKm: 0.1, description: "Lowest-cost, lowest-emission for bulk long-distance shipments." },
   { id: "air", name: "Express Air", icon: "✈️", capacity: "Up to 100 kg", speed: "Same-day: 2–8h", pricePerKm: 45, co2PerKm: 2.8, description: "Fastest option for urgent, lightweight parcels." },
+  { id: "ship", name: "Ship Cargo", icon: "🚢", capacity: "Up to 20,000 kg", speed: "Ocean: 3–19d", pricePerKm: 1.5, co2PerKm: 0.05, description: "Maritime cargo shipping — lowest cost per kg for international freight. Ideal for heavy bulk." },
 ];
 
 export const shipmentTypes: ShipmentType[] = [
@@ -544,6 +545,274 @@ export const customerStats = {
   favoriteService: "Eco Express",
   memberSince: "March 2025",
   accountTier: "Green Plus",
+};
+
+// ── Ship Cargo ───────────────────────────────────────────────────────────
+export type CargoType = "container" | "bulk" | "tanker" | "roro" | "reefer";
+export type CargoStatus = "scheduled" | "in-transit" | "at-port" | "delivered";
+
+export interface ShipCargoBooking {
+  id: string;
+  vesselName: string;
+  vesselType: string;
+  cargoType: CargoType;
+  cargoWeight: number;
+  originPort: string;
+  destinationPort: string;
+  scheduledDate: string;
+  estimatedDelivery: string;
+  status: CargoStatus;
+  distance: number;
+  travelDays: number;
+  fuelUsage: number;
+  co2Saved: number;
+  capacity: number;
+  utilization: number;
+  cost: number;
+  progress: number;
+  originLat: number;
+  originLng: number;
+  destLat: number;
+  destLng: number;
+}
+
+export interface SeaPort {
+  name: string;
+  country: string;
+  lat: number;
+  lng: number;
+  mapX: number;
+  mapY: number;
+  type: string;
+}
+
+export const seaPorts: SeaPort[] = [
+  { name: "Mumbai Port", country: "India", lat: 18.95, lng: 72.84, mapX: 285, mapY: 395, type: "Major Container" },
+  { name: "JNPT (Nhava Sheva)", country: "India", lat: 18.95, lng: 72.95, mapX: 288, mapY: 393, type: "Container Hub" },
+  { name: "Chennai Port", country: "India", lat: 13.09, lng: 80.29, mapX: 286, mapY: 498, type: "Major Container" },
+  { name: "Kolkata Port", country: "India", lat: 22.58, lng: 88.32, mapX: 468, mapY: 340, type: "River Port" },
+  { name: "Visakhapatnam Port", country: "India", lat: 17.69, lng: 83.22, mapX: 330, mapY: 415, type: "Bulk Cargo" },
+  { name: "Cochin Port", country: "India", lat: 9.97, lng: 76.27, mapX: 210, mapY: 555, type: "Container" },
+  { name: "Kandla Port", country: "India", lat: 23.02, lng: 70.22, mapX: 215, mapY: 310, type: "Bulk Cargo" },
+  { name: "Tuticorin Port", country: "India", lat: 8.76, lng: 78.13, mapX: 230, mapY: 570, type: "Container" },
+  { name: "Singapore Port", country: "Singapore", lat: 1.26, lng: 103.82, mapX: 530, mapY: 580, type: "Global Hub" },
+  { name: "Shanghai Port", country: "China", lat: 31.23, lng: 121.47, mapX: 560, mapY: 185, type: "World's Busiest" },
+  { name: "Dubai (Jebel Ali)", country: "UAE", lat: 24.98, lng: 55.02, mapX: 150, mapY: 290, type: "ME Hub" },
+  { name: "Rotterdam Port", country: "Netherlands", lat: 51.90, lng: 4.48, mapX: 45, mapY: 90, type: "EU Gateway" },
+  { name: "Los Angeles Port", country: "USA", lat: 33.74, lng: -118.27, mapX: 30, mapY: 170, type: "US West Coast" },
+  { name: "Hamburg Port", country: "Germany", lat: 53.54, lng: 9.97, mapX: 55, mapY: 82, type: "EU Gateway" },
+  { name: "Busan Port", country: "South Korea", lat: 35.10, lng: 129.04, mapX: 570, mapY: 160, type: "NE Asia Hub" },
+  { name: "Colombo Port", country: "Sri Lanka", lat: 6.94, lng: 79.84, mapX: 240, mapY: 530, type: "Transshipment" },
+];
+
+export const shipCargoBookings: ShipCargoBooking[] = [
+  {
+    id: "SC-001",
+    vesselName: "MV Pacific Guardian",
+    vesselType: "Container Ship",
+    cargoType: "container",
+    cargoWeight: 4250,
+    originPort: "Mumbai Port",
+    destinationPort: "Singapore Port",
+    scheduledDate: "2026-08-18",
+    estimatedDelivery: "2026-08-26",
+    status: "in-transit",
+    distance: 3900,
+    travelDays: 8,
+    fuelUsage: 48,
+    co2Saved: 12.4,
+    capacity: 8000,
+    utilization: 53,
+    cost: 3280,
+    progress: 62,
+    originLat: 18.95,
+    originLng: 72.84,
+    destLat: 1.26,
+    destLng: 103.82,
+  },
+  {
+    id: "SC-002",
+    vesselName: "MV Green Horizon",
+    vesselType: "LNG Carrier",
+    cargoType: "tanker",
+    cargoWeight: 6800,
+    originPort: "Dubai (Jebel Ali)",
+    destinationPort: "Chennai Port",
+    scheduledDate: "2026-08-20",
+    estimatedDelivery: "2026-08-30",
+    status: "in-transit",
+    distance: 2850,
+    travelDays: 10,
+    fuelUsage: 55,
+    co2Saved: 18.7,
+    capacity: 12000,
+    utilization: 57,
+    cost: 4150,
+    progress: 44,
+    originLat: 24.98,
+    originLng: 55.02,
+    destLat: 13.09,
+    destLng: 80.29,
+  },
+  {
+    id: "SC-003",
+    vesselName: "MV Nordic Star",
+    vesselType: "Bulk Carrier",
+    cargoType: "bulk",
+    cargoWeight: 15200,
+    originPort: "Kolkata Port",
+    destinationPort: "Shanghai Port",
+    scheduledDate: "2026-08-15",
+    estimatedDelivery: "2026-08-28",
+    status: "in-transit",
+    distance: 5200,
+    travelDays: 13,
+    fuelUsage: 72,
+    co2Saved: 24.1,
+    capacity: 20000,
+    utilization: 76,
+    cost: 5890,
+    progress: 58,
+    originLat: 22.58,
+    originLng: 88.32,
+    destLat: 31.23,
+    destLng: 121.47,
+  },
+  {
+    id: "SC-004",
+    vesselName: "MV South Wind",
+    vesselType: "Ro-Ro Ship",
+    cargoType: "roro",
+    cargoWeight: 2100,
+    originPort: "Cochin Port",
+    destinationPort: "Colombo Port",
+    scheduledDate: "2026-08-22",
+    estimatedDelivery: "2026-08-25",
+    status: "scheduled",
+    distance: 420,
+    travelDays: 3,
+    fuelUsage: 15,
+    co2Saved: 3.2,
+    capacity: 3500,
+    utilization: 60,
+    cost: 1420,
+    progress: 0,
+    originLat: 9.97,
+    originLng: 76.27,
+    destLat: 6.94,
+    destLng: 79.84,
+  },
+  {
+    id: "SC-005",
+    vesselName: "MV Bengal Express",
+    vesselType: "Container Ship",
+    cargoType: "container",
+    cargoWeight: 3400,
+    originPort: "JNPT (Nhava Sheva)",
+    destinationPort: "Busan Port",
+    scheduledDate: "2026-08-10",
+    estimatedDelivery: "2026-08-22",
+    status: "in-transit",
+    distance: 6800,
+    travelDays: 12,
+    fuelUsage: 62,
+    co2Saved: 15.8,
+    capacity: 6000,
+    utilization: 57,
+    cost: 5200,
+    progress: 78,
+    originLat: 18.95,
+    originLng: 72.95,
+    destLat: 35.10,
+    destLng: 129.04,
+  },
+  {
+    id: "SC-006",
+    vesselName: "MV Ironclad",
+    vesselType: "Bulk Carrier",
+    cargoType: "bulk",
+    cargoWeight: 18500,
+    originPort: "Visakhapatnam Port",
+    destinationPort: "Rotterdam Port",
+    scheduledDate: "2026-08-05",
+    estimatedDelivery: "2026-08-20",
+    status: "delivered",
+    distance: 8200,
+    travelDays: 15,
+    fuelUsage: 85,
+    co2Saved: 32.0,
+    capacity: 22000,
+    utilization: 84,
+    cost: 7650,
+    progress: 100,
+    originLat: 17.69,
+    originLng: 83.22,
+    destLat: 51.90,
+    destLng: 4.48,
+  },
+  {
+    id: "SC-007",
+    vesselName: "MV Reef Guardian",
+    vesselType: "Reefer Ship",
+    cargoType: "reefer",
+    cargoWeight: 890,
+    originPort: "Tuticorin Port",
+    destinationPort: "Hamburg Port",
+    scheduledDate: "2026-08-24",
+    estimatedDelivery: "2026-09-12",
+    status: "scheduled",
+    distance: 8500,
+    travelDays: 19,
+    fuelUsage: 42,
+    co2Saved: 8.5,
+    capacity: 1200,
+    utilization: 74,
+    cost: 8900,
+    progress: 0,
+    originLat: 8.76,
+    originLng: 78.13,
+    destLat: 53.54,
+    destLng: 9.97,
+  },
+  {
+    id: "SC-008",
+    vesselName: "MV Kandla Star",
+    vesselType: "Bulk Carrier",
+    cargoType: "bulk",
+    cargoWeight: 12800,
+    originPort: "Kandla Port",
+    destinationPort: "Los Angeles Port",
+    scheduledDate: "2026-08-01",
+    estimatedDelivery: "2026-08-20",
+    status: "delivered",
+    distance: 14500,
+    travelDays: 19,
+    fuelUsage: 95,
+    co2Saved: 28.3,
+    capacity: 16000,
+    utilization: 80,
+    cost: 11200,
+    progress: 100,
+    originLat: 23.02,
+    originLng: 70.22,
+    destLat: 33.74,
+    destLng: -118.27,
+  },
+];
+
+export const cargoTypeLabels: Record<CargoType, { label: string; icon: string; color: string }> = {
+  container: { label: "Container", icon: "📦", color: "emerald" },
+  bulk: { label: "Bulk Cargo", icon: "🏭", color: "blue" },
+  tanker: { label: "Tanker", icon: "🛢️", color: "amber" },
+  roro: { label: "Ro-Ro", icon: "🚗", color: "violet" },
+  reefer: { label: "Reefer", icon: "❄️", color: "cyan" },
+};
+
+export const cargoStatusLabels: Record<CargoStatus, { label: string; color: string; bg: string }> = {
+  scheduled: { label: "Scheduled", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
+  "in-transit": { label: "In Transit", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
+  "at-port": { label: "At Port", color: "text-amber-600", bg: "bg-amber-50 border-amber-200" },
+  delivered: { label: "Delivered", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
 };
 
 // ── Energy Logistics Shipments ──────────────────────────────────────────

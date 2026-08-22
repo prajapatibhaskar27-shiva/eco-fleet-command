@@ -3,8 +3,8 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  catalog, indiaCities, shipmentVehicles, shipmentTypes,
-  type CatalogItem, type IndiaCity,
+  catalog, indiaCities, shipmentVehicles, shipmentTypes, seaPorts, cargoTypeLabels, shipCargoBookings,
+  type CatalogItem, type IndiaCity, type CargoType,
 } from "@/data/demo";
 import {
   Calendar, Clock, ChevronRight, ArrowLeft, Check, DollarSign, Leaf,
@@ -112,7 +112,7 @@ function getDistanceKm(a: IndiaCity, b: IndiaCity): number {
 
 /* ── Main Schedule Component ────────────────────────────────────────────── */
 export default function Schedule({ preselectedServiceId, onComplete }: ScheduleProps) {
-  const [step, setStep] = useState<"service" | "india-details" | "confirm">(
+  const [step, setStep] = useState<"service" | "india-details" | "ship-cargo" | "confirm">(
     preselectedServiceId ? "india-details" : "service"
   );
   const [svc, setSvc] = useState<CatalogItem | null>(
@@ -169,19 +169,19 @@ export default function Schedule({ preselectedServiceId, onComplete }: ScheduleP
 
         {/* Steps indicator */}
         <div className="flex items-center gap-2 mb-6">
-          {["service", "india-details", "confirm"].map((s, i) => (
+          {["service", "india-details", "ship-cargo", "confirm"].map((s, i) => (
             <div key={s} className="flex items-center gap-2">
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold ${
                 step === s ? "bg-emerald-500 text-white"
-                : ["service", "india-details", "confirm"].indexOf(step) > i ? "bg-emerald-100 text-emerald-700"
+                : ["service", "india-details", "ship-cargo", "confirm"].indexOf(step) > i ? "bg-emerald-100 text-emerald-700"
                 : "bg-gray-100 text-gray-400"
               }`}>
-                {["service", "india-details", "confirm"].indexOf(step) > i ? <Check className="w-3.5 h-3.5" /> : i + 1}
+                {["service", "india-details", "ship-cargo", "confirm"].indexOf(step) > i ? <Check className="w-3.5 h-3.5" /> : i + 1}
               </div>
               <span className={`text-[12px] ${step === s ? "text-gray-900 font-semibold" : "text-gray-400"}`}>
-                {s === "service" ? "Service" : s === "india-details" ? "Ship Anywhere in India" : "Confirm"}
+                {s === "service" ? "Service" : s === "india-details" ? "Ship Anywhere in India" : s === "ship-cargo" ? "Ship Cargo" : "Confirm"}
               </span>
-              {i < 2 && <div className="w-8 h-[1px] bg-gray-200 mx-1" />}
+              {i < 3 && <div className="w-6 h-[1px] bg-gray-200 mx-0.5" />}
             </div>
           ))}
         </div>
@@ -210,6 +210,26 @@ export default function Schedule({ preselectedServiceId, onComplete }: ScheduleP
                     <p className="text-[12px] text-gray-500 mt-0.5">Enter pickup and delivery anywhere across India — choose vehicle, type, and see your route on the live map.</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-emerald-500 shrink-0 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </button>
+
+              {/* Ship Cargo option */}
+              <button
+                onClick={() => { setStep("ship-cargo"); }}
+                className="w-full text-left p-4 rounded-2xl border-2 border-blue-200 bg-blue-50/30 hover:bg-blue-50 hover:border-blue-300 transition-all mb-4 group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Ship className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-[15px] font-bold text-gray-900">🚢 Ship Cargo</h3>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500 text-white font-bold uppercase">Ocean</span>
+                    </div>
+                    <p className="text-[12px] text-gray-500 mt-0.5">Maritime cargo shipping across 16 major ports — containers, bulk, tankers, Ro-Ro, and reefer. Lowest cost per kg.</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-blue-500 shrink-0 group-hover:translate-x-1 transition-transform" />
                 </div>
               </button>
 
@@ -471,7 +491,136 @@ export default function Schedule({ preselectedServiceId, onComplete }: ScheduleP
             </motion.div>
           )}
 
-          {/* ── Step 3: Confirmation ─────────────────────────────────── */}
+          {/* ── Step: Ship Cargo Details ──────────────────────────── */}
+          {step === "ship-cargo" && (
+            <motion.div key="ship-cargo" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+              <h2 className="text-[20px] font-bold text-gray-900 mb-1 flex items-center gap-2">
+                <Ship className="w-5 h-5 text-blue-500" />
+                Ship Cargo — Maritime Freight
+              </h2>
+              <p className="text-[13px] text-gray-500 mb-5">Select ports, cargo type, and schedule your ocean shipment.</p>
+
+              <div className="space-y-5">
+                {/* Port Selection */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[12px] font-medium text-gray-600 mb-1.5 block">Origin Port</label>
+                    <select
+                      value={origin}
+                      onChange={(e) => setOrigin(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 appearance-none transition-all"
+                    >
+                      <option value="" className="bg-white">Select origin port…</option>
+                      {seaPorts.map((p) => <option key={p.name} value={p.name} className="bg-white">{p.name} ({p.country})</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[12px] font-medium text-gray-600 mb-1.5 block">Destination Port</label>
+                    <select
+                      value={dest}
+                      onChange={(e) => setDest(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 appearance-none transition-all"
+                    >
+                      <option value="" className="bg-white">Select destination port…</option>
+                      {seaPorts.filter((p) => p.name !== origin).map((p) => <option key={p.name} value={p.name} className="bg-white">{p.name} ({p.country})</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Cargo Type Selection */}
+                <div>
+                  <label className="text-[12px] font-medium text-gray-600 mb-2 block">Cargo Type</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {(Object.keys(cargoTypeLabels) as CargoType[]).map((ct) => {
+                      const info = cargoTypeLabels[ct];
+                      return (
+                        <button
+                          key={ct}
+                          onClick={() => setShipType(ct)}
+                          className={`p-3 rounded-xl border text-center transition-all ${
+                            shipType === ct
+                              ? "border-blue-300 bg-blue-50 shadow-sm"
+                              : "border-gray-200 bg-white hover:border-gray-300"
+                          }`}
+                        >
+                          <span className="text-xl block mb-1">{info.icon}</span>
+                          <span className="text-[11px] font-semibold text-gray-900 block">{info.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Date, Weight, Items */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-[12px] font-medium text-gray-600 mb-1.5 block">Sailing Date</label>
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all" />
+                  </div>
+                  <div>
+                    <label className="text-[12px] font-medium text-gray-600 mb-1.5 block">Cargo Weight (tonnes)</label>
+                    <input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} min="0.1" step="0.1" className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all" />
+                  </div>
+                  <div>
+                    <label className="text-[12px] font-medium text-gray-600 mb-1.5 block">Containers / Units</label>
+                    <input type="number" value={items} onChange={(e) => setItems(e.target.value)} min="1" className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all" />
+                  </div>
+                </div>
+
+                {/* Route preview */}
+                {origin && dest && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="p-4 rounded-2xl bg-blue-50 border border-blue-100">
+                    <div className="flex items-center gap-3 mb-3">
+                      <MapPin className="w-4 h-4 text-blue-600" />
+                      <span className="text-[13px] font-semibold text-gray-900">{origin}</span>
+                      <ArrowRight className="w-4 h-4 text-blue-400" />
+                      <span className="text-[13px] font-semibold text-gray-900">{dest}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                      <div>
+                        <p className="text-[18px] font-bold text-blue-600">~{(() => { const op = seaPorts.find((p) => p.name === origin); const dp = seaPorts.find((p) => p.name === dest); if (!op || !dp) return 0; const R = 6371; const dLat = ((dp.lat - op.lat) * Math.PI) / 180; const dLng = ((dp.lng - op.lng) * Math.PI) / 180; const a = Math.sin(dLat / 2) ** 2 + Math.cos((op.lat * Math.PI) / 180) * Math.cos((dp.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2; return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))); })().toLocaleString()} km</p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider">Distance</p>
+                      </div>
+                      <div>
+                        <p className="text-[18px] font-bold text-gray-900">~{(() => { const op = seaPorts.find((p) => p.name === origin); const dp = seaPorts.find((p) => p.name === dest); if (!op || !dp) return 0; const R = 6371; const dLat = ((dp.lat - op.lat) * Math.PI) / 180; const dLng = ((dp.lng - op.lng) * Math.PI) / 180; const a = Math.sin(dLat / 2) ** 2 + Math.cos((op.lat * Math.PI) / 180) * Math.cos((dp.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2; const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); return Math.max(3, Math.round(km / 600)); })()} days</p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider">Est. Transit</p>
+                      </div>
+                      <div>
+                        <p className="text-[18px] font-bold text-emerald-600">~{(() => { const w = parseFloat(weight || "0"); return (w * 0.015).toFixed(1); })()} t</p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider">Est. Fuel</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Cost summary */}
+                {origin && dest && shipType && (
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="p-5 rounded-2xl bg-gray-50 border border-gray-100">
+                    <h3 className="text-[13px] font-semibold text-gray-900 mb-3">Cargo Summary</h3>
+                    <div className="space-y-2 mb-3">
+                      <div className="flex items-center gap-2 text-[12px] text-gray-600"><MapPin className="w-3 h-3 text-blue-500" /><span>{origin} → {dest}</span></div>
+                      <div className="flex items-center gap-2 text-[12px] text-gray-600"><Ship className="w-3 h-3 text-gray-400" /><span>{cargoTypeLabels[shipType as CargoType]?.icon} {cargoTypeLabels[shipType as CargoType]?.label} — {weight} tonnes</span></div>
+                    </div>
+                    <div className="h-[1px] bg-gray-200 mb-3" />
+                    <div className="flex items-end justify-between">
+                      <div><p className="text-[11px] text-gray-500">Estimated freight</p><p className="text-[28px] font-bold text-gray-900 leading-none">${Math.round(parseFloat(weight || "0") * 85 * (cargoTypeLabels[shipType as CargoType]?.label === "Reefer" ? 2.5 : 1)).toLocaleString()}</p></div>
+                      <div className="text-right"><p className="text-[11px] text-gray-500">Eco impact</p><p className="text-[14px] font-bold text-emerald-600">~{(() => { const w = parseFloat(weight || "0"); const d = (() => { const op = seaPorts.find((p) => p.name === origin); const dp = seaPorts.find((p) => p.name === dest); if (!op || !dp) return 0; const R = 6371; const dLat = ((dp.lat - op.lat) * Math.PI) / 180; const dLng = ((dp.lng - op.lng) * Math.PI) / 180; const a = Math.sin(dLat / 2) ** 2 + Math.cos((op.lat * Math.PI) / 180) * Math.cos((dp.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2; return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); })(); return (d * w * 0.0001).toFixed(1); })()} kg CO₂ saved</p></div>
+                    </div>
+                  </motion.div>
+                )}
+
+                <button
+                  onClick={() => setStep("confirm")}
+                  disabled={!origin || !dest || !shipType || !date}
+                  className="w-full py-3 rounded-xl text-[14px] font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm shadow-emerald-200"
+                >
+                  Confirm Cargo Booking<ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Step 4: Confirmation ─────────────────────────────────── */}
           {step === "confirm" && (
             <motion.div key="confirm" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
               <motion.div

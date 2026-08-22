@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
-import { customerStats, bookings } from "@/data/demo";
-import { Package, Truck, DollarSign, Leaf } from "lucide-react";
+import { customerStats, bookings, shipCargoBookings, cargoTypeLabels, cargoStatusLabels } from "@/data/demo";
+import { Package, Truck, DollarSign, Leaf, Ship, Anchor, TrendingUp, Fuel } from "lucide-react";
 
 const monthlySpending = [
   { month: "Mar", value: 180 },
@@ -33,7 +33,6 @@ const ChartTooltip = ({ active, payload, label }: any) => {
       {payload.map((p: any, i: number) => (
         <p key={i} className="text-gray-900 font-semibold">
           {p.name}: {typeof p.value === "number" && p.value % 1 !== 0 ? p.value.toFixed(1) : p.value}
-          {p.name.includes("$") || p.name.includes("Spent") ? "" : ""}
         </p>
       ))}
     </div>
@@ -66,6 +65,9 @@ function StatCard({
 
 export default function DashboardOverview() {
   const activeBookings = bookings.filter((b) => b.status === "in-transit" || b.status === "confirmed");
+  const activeCargo = shipCargoBookings.filter((b) => b.status === "in-transit");
+  const totalCargoTonnage = shipCargoBookings.reduce((sum, c) => sum + c.cargoWeight, 0);
+  const totalCargoCO2 = shipCargoBookings.reduce((sum, c) => sum + c.co2Saved, 0);
 
   return (
     <div className="h-full overflow-y-auto p-5 sm:p-6 space-y-5">
@@ -91,8 +93,8 @@ export default function DashboardOverview() {
           value={customerStats.activeShipments.toString()}
           label="Active Shipments"
           sub="In transit or confirmed"
-          iconBg="bg-teal-50"
-          iconColor="text-teal-600"
+          iconBg="bg-emerald-50"
+          iconColor="text-emerald-600"
           delay={0.05}
         />
         <StatCard
@@ -115,6 +117,31 @@ export default function DashboardOverview() {
         />
       </div>
 
+      {/* Ship Cargo Stats Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18, duration: 0.4 }}
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+      >
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100 p-3.5 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center"><Ship className="w-4.5 h-4.5 text-blue-600" /></div>
+          <div><p className="text-[18px] font-bold text-gray-900">{shipCargoBookings.length}</p><p className="text-[10px] text-gray-500 uppercase tracking-wider">Cargo Voyages</p></div>
+        </div>
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100 p-3.5 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center"><Anchor className="w-4.5 h-4.5 text-blue-600" /></div>
+          <div><p className="text-[18px] font-bold text-gray-900">{activeCargo.length}</p><p className="text-[10px] text-gray-500 uppercase tracking-wider">In Transit</p></div>
+        </div>
+        <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-100 p-3.5 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center"><Fuel className="w-4.5 h-4.5 text-emerald-600" /></div>
+          <div><p className="text-[18px] font-bold text-gray-900">{(totalCargoTonnage / 1000).toFixed(0)}k t</p><p className="text-[10px] text-gray-500 uppercase tracking-wider">Total Tonnage</p></div>
+        </div>
+        <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-100 p-3.5 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center"><Leaf className="w-4.5 h-4.5 text-emerald-600" /></div>
+          <div><p className="text-[18px] font-bold text-emerald-700">{totalCargoCO2.toFixed(0)} kg</p><p className="text-[10px] text-gray-500 uppercase tracking-wider">Cargo CO₂ Saved</p></div>
+        </div>
+      </motion.div>
+
       {/* Active Shipments */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -131,32 +158,18 @@ export default function DashboardOverview() {
           </h3>
           <span className="text-[12px] text-gray-400 font-medium">{activeBookings.length} in progress</span>
         </div>
-
         <div className="space-y-0">
           {activeBookings.map((b, i) => (
-            <div
-              key={b.id}
-              className={`flex items-center gap-4 py-3.5 ${
-                i < activeBookings.length - 1 ? "border-b border-gray-100" : ""
-              }`}
-            >
+            <div key={b.id} className={`flex items-center gap-4 py-3.5 ${i < activeBookings.length - 1 ? "border-b border-gray-100" : ""}`}>
               <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
                 <Package className="w-5 h-5 text-emerald-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-[13px] font-mono font-semibold text-gray-900">{b.id}</span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide ${
-                    b.status === "in-transit"
-                      ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                      : "bg-teal-50 text-teal-600 border border-teal-100"
-                  }`}>
-                    {b.status}
-                  </span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide ${b.status === "in-transit" ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"}`}>{b.status}</span>
                 </div>
-                <p className="text-[13px] text-gray-500">
-                  {b.origin} <span className="text-gray-300 mx-1">→</span> {b.destination}
-                </p>
+                <p className="text-[13px] text-gray-500">{b.origin} <span className="text-gray-300 mx-1">→</span> {b.destination}</p>
               </div>
               <div className="text-right shrink-0">
                 <p className="text-[13px] font-semibold text-gray-900">{b.estimatedDelivery}</p>
@@ -166,6 +179,50 @@ export default function DashboardOverview() {
           ))}
         </div>
       </motion.div>
+
+      {/* Active Ship Cargo */}
+      {activeCargo.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.4 }}
+          className="bg-white rounded-2xl border border-gray-100 p-5"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-[15px] font-semibold text-gray-900 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Ship className="w-4 h-4 text-blue-600" />
+              </div>
+              Active Ship Cargo
+            </h3>
+            <span className="text-[12px] text-gray-400 font-medium">{activeCargo.length} voyages</span>
+          </div>
+          <div className="space-y-0">
+            {activeCargo.map((c, i) => {
+              const statusInfo = cargoStatusLabels[c.status];
+              const cargoInfo = cargoTypeLabels[c.cargoType];
+              return (
+                <div key={c.id} className={`flex items-center gap-4 py-3.5 ${i < activeCargo.length - 1 ? "border-b border-gray-100" : ""}`}>
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                    <Ship className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-[13px] font-mono font-semibold text-gray-900">{c.id}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide border ${statusInfo.bg} ${statusInfo.color}`}>{statusInfo.label}</span>
+                    </div>
+                    <p className="text-[13px] text-gray-500">{c.originPort} <span className="text-gray-300 mx-1">→</span> {c.destinationPort}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-[13px] font-semibold text-gray-900">{c.estimatedDelivery}</p>
+                    <p className="text-[11px] text-gray-400">{cargoInfo.icon} {c.cargoWeight.toLocaleString()} t</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
