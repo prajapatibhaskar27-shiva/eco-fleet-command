@@ -1,0 +1,458 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  Truck,
+  Zap,
+  Leaf,
+  BarChart3,
+  Shield,
+  Clock,
+  MapPin,
+  ArrowRight,
+  ChevronDown,
+  Activity,
+  Brain,
+  Globe,
+  Sparkles,
+  Menu,
+  X,
+} from "lucide-react";
+import { Link } from "react-router";
+
+// ── Animated counter ──────────────────────────────────────────────────────
+function AnimatedCounter({ target, suffix = "", duration = 2 }: { target: number; suffix?: string; duration?: number }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setVisible(true);
+      },
+      { threshold: 0.5 }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    let start = 0;
+    const step = target / (duration * 60);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 1000 / 60);
+    return () => clearInterval(timer);
+  }, [visible, target, duration]);
+
+  return (
+    <span ref={ref}>
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
+}
+
+// ── Floating particle ─────────────────────────────────────────────────────
+function FloatingParticle({ delay, x, y }: { delay: number; x: number; y: number }) {
+  return (
+    <motion.div
+      className="absolute w-1 h-1 rounded-full bg-emerald-400/30"
+      style={{ left: `${x}%`, top: `${y}%` }}
+      animate={{
+        y: [0, -20, 0],
+        opacity: [0.2, 0.6, 0.2],
+      }}
+      transition={{
+        duration: 4 + Math.random() * 3,
+        delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    />
+  );
+}
+
+// ── Feature card ──────────────────────────────────────────────────────────
+function FeatureCard({ icon: Icon, title, description, delay }: { icon: any; title: string; description: string; delay: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay, duration: 0.5 }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      className="group p-6 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-emerald-500/20 hover:bg-white/[0.05] transition-all duration-300"
+    >
+      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center mb-4 group-hover:bg-emerald-500/15 transition-colors">
+        <Icon className="w-6 h-6 text-emerald-400" />
+      </div>
+      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
+      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+    </motion.div>
+  );
+}
+
+// ── Main Landing ──────────────────────────────────────────────────────────
+export default function Landing() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll();
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95]);
+
+  const particles = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    delay: Math.random() * 5,
+  }));
+
+  const stats = [
+    { label: "Active Vehicles", value: 12, suffix: "" },
+    { label: "Deliveries Today", value: 47, suffix: "" },
+    { label: "CO₂ Saved", value: 27, suffix: " kg" },
+    { label: "Fuel Efficiency", value: 23, suffix: "%" },
+  ];
+
+  const features = [
+    {
+      icon: Globe,
+      title: "Live Fleet Map",
+      description: "Real-time vehicle tracking with animated route visualization, status indicators, and instant location updates across your entire fleet.",
+    },
+    {
+      icon: Brain,
+      title: "AI Route Optimization",
+      description: "Green Route Mode balances delivery time, fuel cost, traffic, and CO₂ emissions instead of optimizing only for speed.",
+    },
+    {
+      icon: Leaf,
+      title: "Sustainability Analytics",
+      description: "Track fuel usage, CO₂ reduction, fleet utilization, and delivery efficiency with beautiful animated charts and insights.",
+    },
+    {
+      icon: Activity,
+      title: "Digital Twin Fleet",
+      description: "A live operational mirror of your entire fleet showing real-time state, health metrics, and predictive maintenance alerts.",
+    },
+    {
+      icon: Sparkles,
+      title: "EcoPilot AI Assistant",
+      description: "Ask questions about your fleet, get delay diagnostics, optimization recommendations, and proactive maintenance suggestions.",
+    },
+    {
+      icon: Shield,
+      title: "Smart Alerts",
+      description: "AI-powered alerts for delays, inefficient routes, idle vehicles, and maintenance risks — with one-click resolution.",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#070d1a] text-foreground overflow-hidden">
+      {/* Nav */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#070d1a]/80 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
+              <Leaf className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-lg font-bold text-foreground">
+              Smart Eco <span className="text-emerald-400">Fleet</span>
+            </span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-8 text-sm">
+            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
+            <a href="#stats" className="text-muted-foreground hover:text-foreground transition-colors">Impact</a>
+            <a href="#how" className="text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link to="/auth">
+              <button className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                Launch Fleet Command
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
+            <button
+              className="md:hidden w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-foreground"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-white/5 bg-[#070d1a]/95 backdrop-blur-xl p-4 space-y-3">
+            <a href="#features" className="block text-sm text-muted-foreground hover:text-foreground py-2">Features</a>
+            <a href="#stats" className="block text-sm text-muted-foreground hover:text-foreground py-2">Impact</a>
+            <a href="#how" className="block text-sm text-muted-foreground hover:text-foreground py-2">How It Works</a>
+            <Link to="/auth">
+              <button className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-500 text-white text-sm font-semibold rounded-xl mt-2">
+                Launch Fleet Command <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
+          </div>
+        )}
+      </nav>
+
+      {/* Hero Section */}
+      <motion.section
+        ref={heroRef}
+        style={{ opacity: heroOpacity, scale: heroScale }}
+        className="relative min-h-screen flex items-center justify-center pt-16"
+      >
+        {/* Background effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,_rgba(16,185,129,0.08)_0%,_transparent_60%)]" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+          {particles.map((p) => (
+            <FloatingParticle key={p.id} x={p.x} y={p.y} delay={p.delay} />
+          ))}
+        </div>
+
+        {/* Animated route lines in background */}
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          <svg className="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="heroRoute1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0" />
+                <stop offset="50%" stopColor="#10b981" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {/* Animated routes */}
+            <path d="M 0 300 Q 250 200 500 300 Q 750 400 1000 300" fill="none" stroke="url(#heroRoute1)" strokeWidth="1" strokeDasharray="8 4">
+              <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="3s" repeatCount="indefinite" />
+            </path>
+            <path d="M 0 200 Q 300 350 600 200 Q 900 50 1000 200" fill="none" stroke="url(#heroRoute1)" strokeWidth="1" strokeDasharray="6 4">
+              <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="4s" repeatCount="indefinite" />
+            </path>
+            <path d="M 0 450 Q 200 300 500 450 Q 800 600 1000 400" fill="none" stroke="url(#heroRoute1)" strokeWidth="1" strokeDasharray="10 5">
+              <animate attributeName="stroke-dashoffset" from="0" to="-30" dur="5s" repeatCount="indefinite" />
+            </path>
+
+            {/* Moving dots along routes */}
+            <circle r="4" fill="#10b981" filter="url(#glow)">
+              <animateMotion dur="6s" repeatCount="indefinite" path="M 0 300 Q 250 200 500 300 Q 750 400 1000 300" />
+            </circle>
+            <circle r="3" fill="#06b6d4" filter="url(#glow)">
+              <animateMotion dur="8s" repeatCount="indefinite" path="M 0 200 Q 300 350 600 200 Q 900 50 1000 200" />
+            </circle>
+            <circle r="3.5" fill="#10b981" filter="url(#glow)">
+              <animateMotion dur="7s" repeatCount="indefinite" path="M 0 450 Q 200 300 500 450 Q 800 600 1000 400" />
+            </circle>
+
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-8">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI-Powered Fleet Intelligence
+            </div>
+
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.95] mb-6">
+              <span className="text-foreground">Move Smarter.</span>
+              <br />
+              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                Waste Less.
+              </span>
+            </h1>
+
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+              The eco-friendly logistics command center that combines real-time fleet monitoring, AI route optimization, and sustainability analytics — all in one beautiful platform.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/auth">
+                <button className="group flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 text-base">
+                  Launch Fleet Command
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </Link>
+              <a href="#features">
+                <button className="flex items-center gap-2 px-8 py-3.5 bg-white/5 hover:bg-white/10 text-foreground font-semibold rounded-xl border border-white/10 hover:border-white/20 transition-all text-base">
+                  Explore Intelligence
+                  <ChevronDown className="w-5 h-5" />
+                </button>
+              </a>
+            </div>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-20 max-w-3xl mx-auto"
+          >
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + i * 0.1 }}
+                className="p-4 rounded-xl bg-white/[0.03] border border-white/5 backdrop-blur-sm"
+              >
+                <p className="text-3xl sm:text-4xl font-bold text-foreground">
+                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <ChevronDown className="w-6 h-6 text-muted-foreground" />
+        </motion.div>
+      </motion.section>
+
+      {/* Features Section */}
+      <section id="features" className="relative py-32">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-6">
+              <Shield className="w-3.5 h-3.5" />
+              Enterprise-Ready Intelligence
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
+              Everything your fleet needs
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              A complete logistics command center with AI-powered insights, real-time monitoring, and sustainability tracking.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {features.map((feature, i) => (
+              <FeatureCard key={feature.title} {...feature} delay={i * 0.1} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section id="how" className="relative py-32 border-t border-white/5">
+        <div className="max-w-5xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
+              How it works
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              From launch to insights in three simple steps.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { step: "01", title: "Connect", desc: "Register your fleet vehicles and set up real-time GPS tracking across your entire operation.", icon: MapPin },
+              { step: "02", title: "Optimize", desc: "EcoPilot AI analyzes routes, loads, and traffic to recommend the greenest, fastest paths.", icon: Zap },
+              { step: "03", title: "Deliver", desc: "Monitor deliveries in real-time, track sustainability metrics, and continuously improve.", icon: Truck },
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+                className="relative p-6 rounded-2xl bg-white/[0.03] border border-white/5 text-center"
+              >
+                <div className="text-5xl font-bold text-emerald-500/15 mb-4">{item.step}</div>
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center mx-auto mb-4">
+                  <item.icon className="w-6 h-6 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative py-32 border-t border-white/5">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(16,185,129,0.06)_0%,_transparent_60%)]" />
+        <div className="relative max-w-3xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
+              Ready to transform your fleet?
+            </h2>
+            <p className="text-lg text-muted-foreground mb-10">
+              Join the future of sustainable logistics. Monitor smarter, waste less, and deliver better.
+            </p>
+            <Link to="/auth">
+              <button className="group inline-flex items-center gap-2 px-10 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 text-lg">
+                Get Started — It's Free
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/5 py-8">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
+              <Leaf className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-foreground">Smart Eco Fleet</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            © 2026 Smart Eco Fleet. Built for a greener tomorrow.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
