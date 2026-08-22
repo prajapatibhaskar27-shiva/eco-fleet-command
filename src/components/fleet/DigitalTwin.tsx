@@ -1,237 +1,186 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { vehicles, fleetStats, type Vehicle } from "@/data/demo";
+import { bookings, type Booking } from "@/data/demo";
 import {
-  Zap,
-  Fuel,
-  Thermometer,
-  Activity,
-  Battery,
-  Truck,
-  Wifi,
-  WifiOff,
-  Gauge,
-  Leaf,
-  Shield,
+  Package,
+  MapPin,
   Clock,
+  Hash,
+  DollarSign,
+  Leaf,
+  Calendar,
+  CheckCircle,
+  Circle,
+  ArrowLeft,
+  ExternalLink,
+  Copy,
+  Truck,
 } from "lucide-react";
 
-function PulseRing({ color, size }: { color: string; size: number }) {
-  return (
-    <span className="relative" style={{ width: size, height: size }}>
-      <span
-        className="absolute inset-0 rounded-full animate-ping opacity-20"
-        style={{ backgroundColor: color }}
-      />
-      <span
-        className="relative block rounded-full"
-        style={{ width: size, height: size, backgroundColor: color }}
-      />
-    </span>
-  );
+interface BookingDetailProps {
+  bookingId: string;
+  onBack: () => void;
 }
 
-function MetricGauge({
-  label,
-  value,
-  max,
-  unit,
-  color,
-  icon: Icon,
-}: {
-  label: string;
-  value: number;
-  max: number;
-  unit: string;
-  color: string;
-  icon: any;
-}) {
-  const pct = (value / max) * 100;
-  const circumference = 2 * Math.PI * 36;
-  const offset = circumference - (pct / 100) * circumference;
+const statusConfig = {
+  pending: { label: "Pending", color: "text-slate-400", bg: "bg-slate-500/15 border-slate-500/30" },
+  confirmed: { label: "Confirmed", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30" },
+  "in-transit": { label: "In Transit", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30" },
+  delivered: { label: "Delivered", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
+  cancelled: { label: "Cancelled", color: "text-gray-500", bg: "bg-gray-500/15 border-gray-500/30" },
+};
+
+export default function BookingDetail({ bookingId, onBack }: BookingDetailProps) {
+  const booking = bookings.find((b) => b.id === bookingId);
+
+  if (!booking) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <Package className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">Booking not found</p>
+          <button onClick={onBack} className="mt-3 text-sm text-emerald-400 hover:text-emerald-300">Go back</button>
+        </div>
+      </div>
+    );
+  }
+
+  const status = statusConfig[booking.status];
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-24 h-24">
-        <svg viewBox="0 0 80 80" className="w-full h-full -rotate-90">
-          <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="5" />
-          <motion.circle
-            cx="40"
-            cy="40"
-            r="36"
-            fill="none"
-            stroke={color}
-            strokeWidth="5"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset: offset }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <Icon className="w-4 h-4 mb-0.5" style={{ color }} />
-          <span className="text-lg font-bold text-foreground">{value}</span>
-          <span className="text-[10px] text-muted-foreground">{unit}</span>
-        </div>
-      </div>
-      <span className="text-[10px] text-muted-foreground mt-1">{label}</span>
-    </div>
-  );
-}
+    <div className="h-full overflow-y-auto">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-6">
+        {/* Back button */}
+        <motion.button
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          onClick={onBack}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to bookings
+        </motion.button>
 
-function VehicleTwin({ vehicle, delay }: { vehicle: Vehicle; delay: number }) {
-  const isEV = vehicle.type.startsWith("ev");
-  const isOnline = vehicle.status !== "offline";
-  const energyPct = isEV ? (vehicle.battery ?? 0) : vehicle.fuel;
-  const energyColor = energyPct > 60 ? "#10b981" : energyPct > 30 ? "#f59e0b" : "#ef4444";
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay }}
-      className={`p-3 rounded-xl border transition-all ${
-        isOnline
-          ? "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
-          : "border-white/5 bg-white/[0.01] opacity-50"
-      }`}
-    >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className={`relative w-2 h-2 rounded-full ${
-            vehicle.status === "active"
-              ? "bg-emerald-500"
-              : vehicle.status === "idle"
-                ? "bg-amber-500"
-                : vehicle.status === "maintenance"
-                  ? "bg-orange-500"
-                  : "bg-gray-600"
-          }`}>
-            {vehicle.status === "active" && (
-              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-40" />
-            )}
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <div className="flex items-start justify-between mb-2">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-mono text-muted-foreground">{booking.id}</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full border ${status.bg} ${status.color} font-medium`}>
+                  {status.label}
+                </span>
+              </div>
+              <h1 className="text-2xl font-bold text-foreground">{booking.serviceName}</h1>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-foreground">${booking.cost.toFixed(2)}</p>
+              <p className="text-[11px] text-muted-foreground">Total cost</p>
+            </div>
           </div>
-          <span className="text-xs font-semibold text-foreground">{vehicle.name}</span>
-        </div>
-        {isOnline ? (
-          <Wifi className="w-3 h-3 text-emerald-400" />
-        ) : (
-          <WifiOff className="w-3 h-3 text-gray-600" />
-        )}
-      </div>
+        </motion.div>
 
-      {/* Mini gauges */}
-      <div className="grid grid-cols-4 gap-2 mb-2">
-        <div className="text-center">
-          <Gauge className="w-3 h-3 mx-auto mb-0.5 text-muted-foreground" />
-          <p className="text-[10px] font-semibold text-foreground">{vehicle.speed}</p>
-          <p className="text-[8px] text-muted-foreground">km/h</p>
-        </div>
-        <div className="text-center">
-          {isEV ? <Battery className="w-3 h-3 mx-auto mb-0.5 text-emerald-400" /> : <Fuel className="w-3 h-3 mx-auto mb-0.5 text-muted-foreground" />}
-          <p className="text-[10px] font-semibold" style={{ color: energyColor }}>{energyPct}%</p>
-          <p className="text-[8px] text-muted-foreground">{isEV ? "batt" : "fuel"}</p>
-        </div>
-        <div className="text-center">
-          <Activity className="w-3 h-3 mx-auto mb-0.5 text-muted-foreground" />
-          <p className="text-[10px] font-semibold text-foreground">{vehicle.utilization}%</p>
-          <p className="text-[8px] text-muted-foreground">util</p>
-        </div>
-        <div className="text-center">
-          <Leaf className="w-3 h-3 mx-auto mb-0.5 text-muted-foreground" />
-          <p className="text-[10px] font-semibold" style={{ color: vehicle.emissions === 0 ? "#10b981" : "#f59e0b" }}>
-            {vehicle.emissions}g
-          </p>
-          <p className="text-[8px] text-muted-foreground">CO₂</p>
-        </div>
-      </div>
-
-      {/* Energy bar */}
-      <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-        <motion.div
-          className="h-full rounded-full"
-          style={{ backgroundColor: energyColor }}
-          initial={{ width: 0 }}
-          animate={{ width: `${energyPct}%` }}
-          transition={{ duration: 1, ease: "easeOut" }}
-        />
-      </div>
-    </motion.div>
-  );
-}
-
-export default function DigitalTwin() {
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => setTick((t) => t + 1), 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const activeCount = vehicles.filter((v) => v.status === "active").length;
-  const evCount = vehicles.filter((v) => v.type.startsWith("ev")).length;
-  const totalEmissions = vehicles.reduce((acc, v) => acc + v.emissions, 0);
-
-  return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-white/5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Activity className="w-5 h-5 text-emerald-400" />
-            Digital Twin Fleet
-          </h2>
-          <div className="flex items-center gap-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span className="text-xs text-emerald-400">Synced</span>
+        {/* Route card */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+          <div className="flex items-center gap-4">
+            <div className="text-center flex-1">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">From</p>
+              <p className="text-sm font-semibold text-foreground">{booking.origin}</p>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <Truck className="w-5 h-5 text-emerald-400" />
+              <div className="w-16 h-[1px] bg-emerald-500/30" />
+              <p className="text-[10px] text-muted-foreground">{booking.weight} kg · {booking.items} items</p>
+            </div>
+            <div className="text-center flex-1">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">To</p>
+              <p className="text-sm font-semibold text-foreground">{booking.destination}</p>
+            </div>
           </div>
-        </div>
-        <p className="text-xs text-muted-foreground mt-1">Real-time fleet operational state mirror</p>
-      </div>
+        </motion.div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Fleet health gauges */}
-        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Fleet Health</h3>
-          <div className="flex justify-around">
-            <MetricGauge label="Active" value={activeCount} max={12} unit="vehicles" color="#10b981" icon={Truck} />
-            <MetricGauge label="Green" value={evCount} max={12} unit="electric" color="#06b6d4" icon={Zap} />
-            <MetricGauge label="Emissions" value={totalEmissions} max={1000} unit="g/km" color="#f59e0b" icon={Leaf} />
-            <MetricGauge label="Uptime" value={Math.round((fleetStats.activeVehicles / fleetStats.totalVehicles) * 100)} max={100} unit="%" color="#a78bfa" icon={Shield} />
-          </div>
-        </div>
-
-        {/* Live status summary */}
-        <div className="grid grid-cols-4 gap-2">
+        {/* Details grid */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {[
-            { label: "Active", count: fleetStats.activeVehicles, color: "bg-emerald-500" },
-            { label: "Idle", count: fleetStats.idleVehicles, color: "bg-amber-500" },
-            { label: "Service", count: fleetStats.maintenanceVehicles, color: "bg-orange-500" },
-            { label: "Offline", count: fleetStats.offlineVehicles, color: "bg-gray-500" },
-          ].map((s) => (
-            <div key={s.label} className="text-center p-2 rounded-lg bg-white/[0.02] border border-white/5">
-              <div className={`w-2 h-2 rounded-full ${s.color} mx-auto mb-1`} />
-              <p className="text-lg font-bold text-foreground">{s.count}</p>
-              <p className="text-[10px] text-muted-foreground">{s.label}</p>
+            { icon: Hash, label: "Tracking", value: booking.trackingNumber, mono: true },
+            { icon: Calendar, label: "Scheduled", value: booking.scheduledDate },
+            { icon: Clock, label: "Est. Delivery", value: booking.estimatedDelivery },
+            { icon: Package, label: "Items", value: `${booking.items} items` },
+            { icon: DollarSign, label: "Cost", value: `$${booking.cost.toFixed(2)}` },
+            { icon: Leaf, label: "CO₂ Saved", value: `${booking.co2Saved} kg`, green: true },
+          ].map((item, i) => (
+            <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+              <item.icon className={`w-4 h-4 mb-2 ${item.green ? "text-emerald-400" : "text-muted-foreground"}`} />
+              <p className="text-[10px] text-muted-foreground mb-0.5">{item.label}</p>
+              <p className={`text-sm font-medium text-foreground ${item.mono ? "font-mono" : ""}`}>{item.value}</p>
             </div>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Vehicle twins grid */}
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-2">Vehicle Twin Status</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {vehicles.map((v, i) => (
-              <VehicleTwin key={v.id} vehicle={v} delay={i * 0.03} />
+        {/* Copy tracking number */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <button
+            onClick={() => navigator.clipboard?.writeText(booking.trackingNumber)}
+            className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground bg-white/[0.03] border border-white/5 hover:border-white/10 rounded-lg px-3 py-2 transition-all w-full"
+          >
+            <Copy className="w-3.5 h-3.5" />
+            <span className="font-mono">{booking.trackingNumber}</span>
+            <span className="ml-auto text-[10px]">Click to copy</span>
+          </button>
+        </motion.div>
+
+        {/* Timeline */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+          <h3 className="text-sm font-semibold text-foreground mb-4">Tracking Timeline</h3>
+          <div className="space-y-0">
+            {booking.timeline.map((event, j) => (
+              <div key={j} className="flex items-start gap-3 relative">
+                {/* Vertical line */}
+                {j < booking.timeline.length - 1 && (
+                  <div className={`absolute left-[7px] top-[14px] w-[2px] h-[calc(100%-8px)] ${
+                    event.status === "done" ? "bg-emerald-500/40" : "bg-white/10"
+                  }`} />
+                )}
+
+                {/* Dot */}
+                <div className={`relative z-10 w-[16px] h-[16px] rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
+                  event.status === "done"
+                    ? "bg-emerald-500/20 border-emerald-500"
+                    : event.status === "current"
+                      ? "bg-blue-500/20 border-blue-500 animate-pulse"
+                      : "bg-white/5 border-white/20"
+                }`}>
+                  {event.status === "done" && <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />}
+                  {event.status === "current" && <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />}
+                </div>
+
+                {/* Content */}
+                <div className="pb-4">
+                  <p className={`text-sm font-medium ${event.status === "pending" ? "text-muted-foreground" : "text-foreground"}`}>
+                    {event.event}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">{event.time}</p>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+        </motion.div>
+
+        {/* Eco impact */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/15">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+              <Leaf className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">Environmental Impact</p>
+              <p className="text-xs text-muted-foreground">
+                This shipment saved <span className="text-emerald-400 font-semibold">{booking.co2Saved} kg</span> of CO₂ compared to standard shipping.
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

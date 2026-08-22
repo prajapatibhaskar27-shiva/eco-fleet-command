@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Send, Sparkles, Leaf, AlertTriangle, TrendingUp, Zap } from "lucide-react";
-import { fleetStats } from "@/data/demo";
+import { Bot, Send, Sparkles, Leaf, Package, Clock, DollarSign } from "lucide-react";
+import { customerStats } from "@/data/demo";
 
 interface Message {
   id: string;
@@ -13,120 +13,88 @@ interface Message {
 }
 
 const quickActions = [
-  { label: "Fleet status overview", icon: TrendingUp },
-  { label: "Why is GreenVan Five delayed?", icon: AlertTriangle },
-  { label: "How to improve eco score?", icon: Leaf },
-  { label: "Optimize idle vehicles", icon: Zap },
+  { label: "Where is my shipment?", icon: Package },
+  { label: "Recommend a shipping service", icon: Sparkles },
+  { label: "How much CO₂ have I saved?", icon: Leaf },
+  { label: "What's my account summary?", icon: DollarSign },
 ];
 
 const responses: Record<string, string> = {
-  "fleet status overview": `**Fleet Status Summary** 🚛
+  "where is my shipment?": `**Shipment Tracking** 📦
 
-• **${fleetStats.activeVehicles}** vehicles active out of ${fleetStats.totalVehicles} total
-• **${fleetStats.totalDeliveriesToday}** deliveries completed today
-• On-time rate: **${fleetStats.onTimeRate}%**
-• Fleet utilization: **${fleetStats.avgUtilization}%**
+Your most recent active shipment is **BK-4821** (Eco Express):
+• **Tracking:** ECO-7X9K2M
+• **Route:** San Francisco, CA → Portland, OR
+• **Status:** In transit — out for delivery
+• **ETA:** August 23
 
-**Top performers:**
-1. GreenVan One — 92% utilization, EV, zero emissions
-2. EcoTruck Zeta — 95% utilization, full battery
+Your Green Freight booking (**BK-4798**) is confirmed and scheduled for pickup on **August 24** from Austin, TX → Denver, CO.
 
-**Needs attention:**
-• GreenVan Two idle for 45 min — consider reassignment
-• EcoTruck Epsilon overdue for maintenance (25 days)
+You also have a pending booking (**BK-4785**) for Standard Eco from Seattle → San Francisco, scheduled for August 25.`,
 
-Recommendation: Assign GreenVan Two to pending shipment s7 to improve utilization by 4.2%.`,
+  "recommend a shipping service": `**Service Recommendation** 💡
 
-  "why is greenvan five delayed?": `**GreenVan Five Delay Analysis** 🔍
+Based on your shipping history:
 
-**Current Status:** In transit, 22% progress
-**Delay:** ~12 minutes on the Residential Circuit
+1. **Eco Express** — Best for your typical shipments. You've used it 8 times with a 4.9★ rating. Next-day delivery with zero emissions.
 
-**Root Cause:** Traffic congestion on I-95 southbound near the Holland Tunnel approach. An accident was reported at 07:58.
+2. **Climate Neutral** — For when impact matters most. 100% carbon offset, and you've rated it 5★ every time. Slightly higher cost but maximum sustainability.
 
-**EcoPilot Recommendation:**
-Route via local streets through Hoboken: Jersey City → Kennedy Blvd → Park Ave → destination. This adds only 3 minutes but avoids the congestion entirely.
+3. **Standard Eco** — Your best value option. Used it 3 times for non-urgent packages. Lowest cost per kg with minimal emissions.
 
-**Impact if applied:**
-• Saves 9 minutes of idle fuel
-• Reduces unnecessary emissions by ~0.8 kg CO₂
-• Maintains 94% on-time rate
+**My pick:** For your next shipment, **Eco Express** gives you the best balance of speed, cost, and environmental impact based on your past preferences.`,
 
-Want me to apply the alternate route?`,
+  "how much co₂ have i saved?": `**Your Environmental Impact** 🌱
 
-  "how to improve eco score?": `**Eco Score Improvement Plan** 🌱
+Total CO₂ saved through eco-conscious shipping: **${customerStats.co2Saved} kg**
 
-Your current fleet green score is **${fleetStats.avgGreenScore}** (target: 82+)
+That's equivalent to:
+• 🌳 Planting **2.1 trees** and letting them grow for a year
+• 💡 Powering an LED bulb for **426 hours**
+• 🚗 Avoiding **168 km** of car driving
 
-**Key opportunities:**
+**Top contributor:** Your Climate Neutral shipments saved **3.8 kg** on a single booking — your highest-impact choice.
 
-1. **Route Optimization (est. +3.2 pts)**
-   • EcoTruck Beta: Switch to Route 21C → saves 14% fuel
-   • EcoTruck Delta: Take Port Local → reduces CO₂ 18%
+**Tip:** Switching one more Standard Eco shipment to Climate Neutral would save an additional ~2 kg per shipment.`,
 
-2. **Idle Reduction (est. +1.1 pts)**
-   • GreenVan Two: Reassign to pending shipment s7
-   • Reduces idle time by 45+ minutes
+  "what's my account summary?": `**Account Summary** 👤
 
-3. **EV Prioritization (est. +2.5 pts)**
-   • Shift 2 more ICE routes to EV vehicles when available
-   • EcoTruck Gamma returns from service tomorrow
+• **Member since:** March 2025
+• **Tier:** Green Plus
+• **Total bookings:** ${customerStats.totalBookings}
+• **Active shipments:** ${customerStats.activeShipments}
+• **Total spent:** $${customerStats.totalSpent.toLocaleString()}
+• **Average rating given:** ${customerStats.averageRating}★
+• **Favorite service:** ${customerStats.favoriteService}
+• **CO₂ saved:** ${customerStats.co2Saved} kg
 
-4. **Maintenance Schedule (est. +0.8 pts)**
-   • EcoTruck Epsilon: Urgent service needed
-   • Overdue by 4 days — efficiency degraded
-
-**Projected score: 87.1** (+5.0 points) within 48 hours`,
-
-  "optimize idle vehicles": `**Idle Vehicle Optimization** ⚡
-
-**Currently idle:**
-• **GreenVan Two** — Depot A, 45 min idle, 45% fuel, driver Lisa Park
-
-**Recommended Actions:**
-
-1. **Immediate Assignment**
-   Assign GreenVan Two to shipment s7 (Newark Warehouse → Manhattan Hub)
-   • Load: 1,900 kg (within 2,000 kg capacity)
-   • Estimated time: 55 min
-   • Revenue impact: +$340
-
-2. **Preventive Measure**
-   Set auto-dispatch rules: vehicles idle >30 min auto-assigned to nearest pending shipment
-
-**Projected Impact:**
-• Fleet utilization: 78.4% → 82.1% (+3.7%)
-• Daily deliveries: 47 → 49 (+2)
-• Annual fuel savings: ~$12,400`,
+You're in the top 15% of eco-conscious shippers on the platform. Keep it up!`,
 };
 
 function getResponse(query: string): string {
   const q = query.toLowerCase();
 
-  if (q.includes("fleet") && (q.includes("status") || q.includes("overview") || q.includes("summary"))) {
-    return responses["fleet status overview"];
+  if (q.includes("where") || q.includes("track") || q.includes("shipment") || q.includes("status")) {
+    return responses["where is my shipment?"];
   }
-  if (q.includes("delay") || q.includes("greenvan five") || q.includes("traffic")) {
-    return responses["why is greenvan five delayed?"];
+  if (q.includes("recommend") || q.includes("service") || q.includes("which") || q.includes("best")) {
+    return responses["recommend a shipping service"];
   }
-  if (q.includes("eco") || q.includes("score") || q.includes("green") || q.includes("improve")) {
-    return responses["how to improve eco score?"];
+  if (q.includes("co₂") || q.includes("co2") || q.includes("carbon") || q.includes("saved") || q.includes("green") || q.includes("eco")) {
+    return responses["how much co₂ have i saved?"];
   }
-  if (q.includes("idle") || q.includes("optim")) {
-    return responses["optimize idle vehicles"];
+  if (q.includes("account") || q.includes("summary") || q.includes("profile") || q.includes("overview")) {
+    return responses["what's my account summary?"];
   }
 
-  return `I analyzed your query: "${query}"
+  return `I'd be happy to help with that! Here's what I can assist with:
 
-Based on current fleet data:
+• **Track shipments** — Get real-time status on your active bookings
+• **Recommend services** — Find the best shipping option for your needs
+• **Environmental impact** — See your CO₂ savings and eco stats
+• **Account overview** — Review your booking history and spending
 
-• **${fleetStats.activeVehicles}** vehicles are active right now
-• Fleet efficiency is at **${fleetStats.avgUtilization}%** utilization
-• **${fleetStats.co2Saved}** kg CO₂ saved this month
-
-I recommend checking the Analytics tab for detailed trends, or try one of the quick actions below for specific fleet insights.
-
-Is there a particular vehicle or route you'd like me to analyze?`;
+Try asking one of the quick actions below, or describe what you need and I'll guide you through it.`;
 }
 
 export default function EcoPilot() {
@@ -134,16 +102,9 @@ export default function EcoPilot() {
     {
       id: "welcome",
       role: "assistant",
-      content: `Hello! I'm **EcoPilot**, your AI fleet intelligence assistant. 🌿
+      content: `Hey there! I'm **EcoPilot**, your shipping assistant. 🌿
 
-I can help you with:
-• Fleet status and performance analysis
-• Vehicle delay diagnostics
-• Eco score optimization
-• Idle vehicle management
-• Route recommendations
-
-What would you like to know?`,
+I can help you track shipments, recommend services, check your environmental impact, and manage your account. What can I do for you?`,
       timestamp: "Now",
     },
   ]);
@@ -182,14 +143,12 @@ What would you like to know?`,
       };
       setMessages((prev) => [...prev, assistantMsg]);
       setIsTyping(false);
-    }, 800 + Math.random() * 600);
+    }, 600 + Math.random() * 400);
   };
 
   const formatMarkdown = (text: string) => {
     return text.split("\n").map((line, i) => {
-      // Bold
       let formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>');
-      // Bullet points
       if (line.match(/^[•\-\d]/)) {
         return <div key={i} className="ml-1 my-0.5" dangerouslySetInnerHTML={{ __html: formatted }} />;
       }
@@ -211,7 +170,7 @@ What would you like to know?`,
               EcoPilot
               <Sparkles className="w-4 h-4 text-emerald-400" />
             </h2>
-            <p className="text-xs text-muted-foreground">AI Fleet Intelligence Assistant</p>
+            <p className="text-xs text-muted-foreground">Shipping assistant</p>
           </div>
           <div className="ml-auto flex items-center gap-1.5">
             <span className="relative flex h-2 w-2">

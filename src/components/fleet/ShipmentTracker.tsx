@@ -1,52 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { shipments, vehicles, type Shipment } from "@/data/demo";
+import { pastShipments, type PastShipment } from "@/data/demo";
 import {
-  Package,
-  Truck,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
   Search,
-  Filter,
-  ChevronDown,
+  Star,
   MapPin,
+  Leaf,
+  DollarSign,
+  Clock,
+  Package,
+  CheckCircle,
+  Download,
 } from "lucide-react";
 
-const statusConfig: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  "in-transit": { label: "In Transit", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/25", icon: Truck },
-  delivered: { label: "Delivered", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/25", icon: CheckCircle },
-  pending: { label: "Pending", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/25", icon: Clock },
-  delayed: { label: "Delayed", color: "text-red-400", bg: "bg-red-500/15 border-red-500/25", icon: AlertTriangle },
-};
-
-export default function ShipmentTracker() {
-  const [filter, setFilter] = useState<"all" | Shipment["status"]>("all");
+export default function ShipmentHistory() {
   const [search, setSearch] = useState("");
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<"date" | "cost" | "co2">("date");
 
-  const filtered = shipments.filter((s) => {
-    if (filter !== "all" && s.status !== filter) return false;
+  const filtered = useMemo(() => {
+    let result = [...pastShipments];
     if (search) {
       const q = search.toLowerCase();
-      return (
-        s.id.toLowerCase().includes(q) ||
-        s.origin.toLowerCase().includes(q) ||
-        s.destination.toLowerCase().includes(q)
+      result = result.filter(
+        (s) =>
+          s.bookingId.toLowerCase().includes(q) ||
+          s.serviceName.toLowerCase().includes(q) ||
+          s.origin.toLowerCase().includes(q) ||
+          s.destination.toLowerCase().includes(q)
       );
     }
-    return true;
-  });
+    result.sort((a, b) => {
+      if (sortBy === "cost") return b.cost - a.cost;
+      if (sortBy === "co2") return b.co2Saved - a.co2Saved;
+      return b.deliveredDate.localeCompare(a.deliveredDate);
+    });
+    return result;
+  }, [search, sortBy]);
 
-  const counts = {
-    all: shipments.length,
-    "in-transit": shipments.filter((s) => s.status === "in-transit").length,
-    delivered: shipments.filter((s) => s.status === "delivered").length,
-    pending: shipments.filter((s) => s.status === "pending").length,
-    delayed: shipments.filter((s) => s.status === "delayed").length,
-  };
+  const totalSpent = pastShipments.reduce((acc, s) => acc + s.cost, 0);
+  const totalCo2 = pastShipments.reduce((acc, s) => acc + s.co2Saved, 0);
 
   return (
     <div className="h-full flex flex-col">
@@ -54,12 +48,28 @@ export default function ShipmentTracker() {
       <div className="p-4 border-b border-white/5">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Package className="w-5 h-5 text-emerald-400" />
-            Shipment Tracking
+            <Clock className="w-5 h-5 text-emerald-400" />
+            Shipment History
           </h2>
-          <span className="text-xs text-muted-foreground bg-white/5 px-2 py-1 rounded-md">
-            {shipments.length} shipments
+          <span className="text-[11px] text-muted-foreground bg-white/5 px-2 py-1 rounded-md">
+            {pastShipments.length} shipments
           </span>
+        </div>
+
+        {/* Summary */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="text-center p-2 rounded-lg bg-white/[0.03] border border-white/5">
+            <p className="text-lg font-bold text-foreground">${totalSpent.toFixed(2)}</p>
+            <p className="text-[10px] text-muted-foreground">Total spent</p>
+          </div>
+          <div className="text-center p-2 rounded-lg bg-white/[0.03] border border-white/5">
+            <p className="text-lg font-bold text-emerald-400">{totalCo2.toFixed(1)} kg</p>
+            <p className="text-[10px] text-muted-foreground">CO₂ saved</p>
+          </div>
+          <div className="text-center p-2 rounded-lg bg-white/[0.03] border border-white/5">
+            <p className="text-lg font-bold text-foreground">{pastShipments.length}</p>
+            <p className="text-[10px] text-muted-foreground">Delivered</p>
+          </div>
         </div>
 
         {/* Search */}
@@ -67,27 +77,26 @@ export default function ShipmentTracker() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search by ID, origin, or destination…"
+            placeholder="Search history…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50"
+            className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 font-mono"
           />
         </div>
 
-        {/* Filter tabs */}
-        <div className="flex gap-1.5">
-          {(["all", "in-transit", "pending", "delayed", "delivered"] as const).map((s) => (
+        {/* Sort */}
+        <div className="flex bg-white/5 rounded-lg p-0.5 border border-white/10">
+          {(["date", "cost", "co2"] as const).map((s) => (
             <button
               key={s}
-              onClick={() => setFilter(s)}
-              className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
-                filter === s
-                  ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                  : "text-muted-foreground hover:text-foreground bg-white/[0.03] border border-transparent hover:border-white/10"
+              onClick={() => setSortBy(s)}
+              className={`px-3 py-1 text-[11px] rounded-md transition-all flex-1 ${
+                sortBy === s
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                  : "text-muted-foreground hover:text-foreground border border-transparent"
               }`}
             >
-              {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1).replace("-", " ")}
-              <span className="ml-1 opacity-60">{counts[s]}</span>
+              {s === "date" ? "By Date" : s === "cost" ? "By Cost" : "By CO₂"}
             </button>
           ))}
         </div>
@@ -96,132 +105,63 @@ export default function ShipmentTracker() {
       {/* Shipment cards */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         <AnimatePresence>
-          {filtered.map((shipment, i) => {
-            const status = statusConfig[shipment.status];
-            const vehicle = vehicles.find((v) => v.id === shipment.vehicleId);
-            const isExpanded = expandedId === shipment.id;
-            const StatusIcon = status.icon;
-
-            return (
-              <motion.div
-                key={shipment.id}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ delay: i * 0.03 }}
-                onClick={() => setExpandedId(isExpanded ? null : shipment.id)}
-                className="rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] cursor-pointer transition-all overflow-hidden"
-              >
-                <div className="p-3">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <Package className="w-4 h-4 text-blue-400" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-mono text-muted-foreground">{shipment.id.toUpperCase()}</p>
-                        <p className="text-sm font-semibold text-foreground">
-                          {shipment.origin} → {shipment.destination}
-                        </p>
-                      </div>
-                    </div>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full border ${status.bg} ${status.color} font-medium flex items-center gap-1`}>
-                      <StatusIcon className="w-2.5 h-2.5" />
-                      {status.label}
-                    </span>
+          {filtered.map((s, i) => (
+            <motion.div
+              key={s.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ delay: i * 0.03 }}
+              className="rounded-xl border border-white/5 bg-white/[0.02] p-3 hover:bg-white/[0.04] transition-all"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <CheckCircle className="w-4 h-4 text-emerald-400" />
                   </div>
-
-                  {/* Progress bar */}
-                  <div className="mb-2">
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-muted-foreground">
-                        {vehicle ? `${vehicle.name}` : "Unassigned"}
-                      </span>
-                      <span className="text-foreground font-medium">{shipment.progress}%</span>
-                    </div>
-                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                      <motion.div
-                        className={`h-full rounded-full ${
-                          shipment.status === "delayed"
-                            ? "bg-red-500"
-                            : shipment.status === "delivered"
-                              ? "bg-emerald-500"
-                              : "bg-blue-500"
-                        }`}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${shipment.progress}%` }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {shipment.weight.toLocaleString()} kg
-                    </span>
-                    <span>{shipment.items} items</span>
-                    <span className="ml-auto font-medium text-foreground">
-                      ETA: {shipment.eta}
-                    </span>
+                  <div>
+                    <p className="text-xs font-mono text-muted-foreground">{s.bookingId}</p>
+                    <h3 className="text-sm font-semibold text-foreground">{s.serviceName}</h3>
                   </div>
                 </div>
-
-                {/* Expanded timeline */}
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-3 pb-3 pt-2 border-t border-white/5">
-                        <p className="text-xs font-medium text-muted-foreground mb-3">Shipment Timeline</p>
-                        <div className="space-y-0">
-                          {shipment.timeline.map((event, j) => (
-                            <div key={j} className="flex items-start gap-3 relative">
-                              {/* Vertical line */}
-                              {j < shipment.timeline.length - 1 && (
-                                <div
-                                  className={`absolute left-[7px] top-[14px] w-[2px] h-[calc(100%-8px)] ${
-                                    event.status === "done" ? "bg-emerald-500/40" : "bg-white/10"
-                                  }`}
-                                />
-                              )}
-
-                              {/* Dot */}
-                              <div className={`relative z-10 w-[16px] h-[16px] rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
-                                event.status === "done"
-                                  ? "bg-emerald-500/20 border-emerald-500"
-                                  : event.status === "current"
-                                    ? "bg-blue-500/20 border-blue-500 animate-pulse"
-                                    : "bg-white/5 border-white/20"
-                              }`}>
-                                {event.status === "done" && <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />}
-                                {event.status === "current" && <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />}
-                              </div>
-
-                              {/* Content */}
-                              <div className="pb-3">
-                                <p className={`text-xs font-medium ${
-                                  event.status === "pending" ? "text-muted-foreground" : "text-foreground"
-                                }`}>
-                                  {event.event}
-                                </p>
-                                <p className="text-[10px] text-muted-foreground">{event.time}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
+                <div className="text-right">
+                  {s.rating && (
+                    <div className="flex items-center gap-0.5 justify-end mb-0.5">
+                      {Array.from({ length: 5 }).map((_, j) => (
+                        <Star
+                          key={j}
+                          className={`w-3 h-3 ${j < s.rating! ? "text-amber-400 fill-amber-400" : "text-white/10"}`}
+                        />
+                      ))}
+                    </div>
                   )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
+                  <p className="text-xs text-muted-foreground">{s.deliveredDate}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                <MapPin className="w-3 h-3 shrink-0" />
+                <span>{s.origin}</span>
+                <span className="text-emerald-500">→</span>
+                <span>{s.destination}</span>
+              </div>
+
+              <div className="flex items-center gap-4 text-xs">
+                <span className="flex items-center gap-1 text-muted-foreground">
+                  <Package className="w-3 h-3" />
+                  {s.weight} kg
+                </span>
+                <span className="flex items-center gap-1 text-muted-foreground">
+                  <DollarSign className="w-3 h-3" />
+                  <span className="text-foreground font-medium">${s.cost.toFixed(2)}</span>
+                </span>
+                <span className="flex items-center gap-1 text-emerald-400 ml-auto">
+                  <Leaf className="w-3 h-3" />
+                  {s.co2Saved} kg saved
+                </span>
+              </div>
+            </motion.div>
+          ))}
         </AnimatePresence>
       </div>
     </div>
