@@ -200,8 +200,8 @@ function DashboardInner() {
   } | null>(null);
 
   const handleBookService = (item: CatalogItem) => { setPreselectedServiceId(item.id); setView("schedule"); };
-  const handleScheduleComplete = () => {
-    setCheckoutData({ serviceName: "Eco Express", origin: "San Francisco, CA", destination: "Portland, OR", weight: "5", items: "1", estimatedCost: 26.00, estimatedCo2: 0.75 });
+  const handleScheduleComplete = (data?: { serviceName: string; origin: string; destination: string; weight: string; items: string; estimatedCost: number; estimatedCo2: number }) => {
+    setCheckoutData(data || { serviceName: "Eco Express", origin: "San Francisco, CA", destination: "Portland, OR", weight: "5", items: "1", estimatedCost: 26.00, estimatedCo2: 0.75 });
     setView("checkout");
   };
   const handleCheckoutComplete = () => { setCheckoutData(null); setPreselectedServiceId(null); setView("bookings"); };

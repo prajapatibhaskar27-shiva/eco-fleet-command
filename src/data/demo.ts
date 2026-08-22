@@ -456,6 +456,85 @@ export const notifications: Notification[] = [
 ];
 
 // ── Customer Stats ───────────────────────────────────────────────────────
+// ── India Shipping ──────────────────────────────────────────────────────
+export interface IndiaCity {
+  name: string;
+  state: string;
+  lat: number;
+  lng: number;
+  mapX: number;
+  mapY: number;
+  hub: boolean;
+}
+
+export interface ShipmentVehicle {
+  id: string;
+  name: string;
+  icon: string;
+  capacity: string;
+  speed: string;
+  pricePerKm: number;
+  co2PerKm: number;
+  description: string;
+}
+
+export interface ShipmentType {
+  id: string;
+  name: string;
+  icon: string;
+  multiplier: number;
+  description: string;
+  features: string[];
+}
+
+export const indiaCities: IndiaCity[] = [
+  { name: "Mumbai", state: "Maharashtra", lat: 19.08, lng: 72.88, mapX: 290, mapY: 395, hub: true },
+  { name: "Delhi", state: "Delhi NCR", lat: 28.61, lng: 77.21, mapX: 330, mapY: 200, hub: true },
+  { name: "Bangalore", state: "Karnataka", lat: 12.97, lng: 77.59, mapX: 255, mapY: 510, hub: true },
+  { name: "Chennai", state: "Tamil Nadu", lat: 13.08, lng: 80.27, mapX: 285, mapY: 500, hub: true },
+  { name: "Kolkata", state: "West Bengal", lat: 22.57, lng: 88.36, mapX: 470, mapY: 340, hub: true },
+  { name: "Hyderabad", state: "Telangana", lat: 17.39, lng: 78.49, mapX: 280, mapY: 420, hub: true },
+  { name: "Ahmedabad", state: "Gujarat", lat: 23.02, lng: 72.57, mapX: 230, mapY: 310, hub: false },
+  { name: "Pune", state: "Maharashtra", lat: 18.52, lng: 73.86, mapX: 265, mapY: 405, hub: false },
+  { name: "Jaipur", state: "Rajasthan", lat: 26.91, lng: 75.79, mapX: 275, mapY: 240, hub: false },
+  { name: "Lucknow", state: "Uttar Pradesh", lat: 26.85, lng: 80.95, mapX: 365, mapY: 230, hub: false },
+  { name: "Chandigarh", state: "Punjab", lat: 30.73, lng: 76.78, mapX: 310, mapY: 170, hub: false },
+  { name: "Bhopal", state: "Madhya Pradesh", lat: 23.26, lng: 77.41, mapX: 310, mapY: 305, hub: false },
+  { name: "Patna", state: "Bihar", lat: 25.60, lng: 85.10, mapX: 420, mapY: 260, hub: false },
+  { name: "Kochi", state: "Kerala", lat: 9.93, lng: 76.27, mapX: 210, mapY: 555, hub: false },
+  { name: "Guwahati", state: "Assam", lat: 26.14, lng: 91.74, mapX: 510, mapY: 250, hub: false },
+  { name: "Coimbatore", state: "Tamil Nadu", lat: 11.01, lng: 76.96, mapX: 240, mapY: 530, hub: false },
+  { name: "Visakhapatnam", state: "Andhra Pradesh", lat: 17.69, lng: 83.22, mapX: 330, mapY: 415, hub: false },
+  { name: "Indore", state: "Madhya Pradesh", lat: 22.72, lng: 75.86, mapX: 280, mapY: 315, hub: false },
+  { name: "Nagpur", state: "Maharashtra", lat: 21.15, lng: 79.09, mapX: 330, mapY: 355, hub: false },
+  { name: "Thiruvananthapuram", state: "Kerala", lat: 8.52, lng: 76.94, mapX: 220, mapY: 570, hub: false },
+  { name: "Varanasi", state: "Uttar Pradesh", lat: 25.32, lng: 83.01, mapX: 400, mapY: 270, hub: false },
+  { name: "Amritsar", state: "Punjab", lat: 31.63, lng: 74.87, mapX: 290, mapY: 155, hub: false },
+  { name: "Surat", state: "Gujarat", lat: 21.17, lng: 72.83, mapX: 230, mapY: 345, hub: false },
+  { name: "Ranchi", state: "Jharkhand", lat: 23.34, lng: 85.31, mapX: 410, mapY: 300, hub: false },
+  { name: "Raipur", state: "Chhattisgarh", lat: 21.25, lng: 81.63, mapX: 370, mapY: 345, hub: false },
+  { name: "Bhubaneswar", state: "Odisha", lat: 20.30, lng: 85.82, mapX: 400, mapY: 365, hub: false },
+  { name: "Dehradun", state: "Uttarakhand", lat: 30.32, lng: 78.03, mapX: 330, mapY: 175, hub: false },
+  { name: "Mysore", state: "Karnataka", lat: 12.30, lng: 76.66, mapX: 240, mapY: 520, hub: false },
+  { name: "Mangalore", state: "Karnataka", lat: 12.87, lng: 74.84, mapX: 225, mapY: 515, hub: false },
+  { name: "Jodhpur", state: "Rajasthan", lat: 26.24, lng: 73.02, mapX: 240, mapY: 250, hub: false },
+];
+
+export const shipmentVehicles: ShipmentVehicle[] = [
+  { id: "ev-van", name: "Electric Van", icon: "🚐", capacity: "Up to 500 kg", speed: "City: 2–4h", pricePerKm: 12, co2PerKm: 0, description: "Zero-emission urban delivery. Best for city-to-city under 500 km." },
+  { id: "cng-truck", name: "CNG Truck", icon: "🚛", capacity: "Up to 2,000 kg", speed: "State: 6–12h", pricePerKm: 8, co2PerKm: 0.3, description: "Low-emission intercity freight. Balanced cost and speed." },
+  { id: "ev-truck", name: "EV Heavy Truck", icon: "🚚", capacity: "Up to 5,000 kg", speed: "Regional: 12–24h", pricePerKm: 10, co2PerKm: 0, description: "Full-electric long-haul. Zero tailpipe emissions for heavy cargo." },
+  { id: "rail", name: "Green Rail", icon: "🚂", capacity: "Up to 20,000 kg", speed: "Pan-India: 2–5d", pricePerKm: 3, co2PerKm: 0.1, description: "Lowest-cost, lowest-emission for bulk long-distance shipments." },
+  { id: "air", name: "Express Air", icon: "✈️", capacity: "Up to 100 kg", speed: "Same-day: 2–8h", pricePerKm: 45, co2PerKm: 2.8, description: "Fastest option for urgent, lightweight parcels." },
+];
+
+export const shipmentTypes: ShipmentType[] = [
+  { id: "standard", name: "Standard", icon: "📦", multiplier: 1.0, description: "Regular parcel delivery with standard handling.", features: ["Standard packaging", "2–5 day delivery", "Basic tracking", "Insurance included"] },
+  { id: "express", name: "Express", icon: "⚡", multiplier: 1.8, description: "Priority handling with expedited transit.", features: ["Priority handling", "1–2 day delivery", "Live tracking", "Signature required"] },
+  { id: "fragile", name: "Fragile / Premium", icon: "💎", multiplier: 2.2, description: "Special handling for delicate or high-value items.", features: ["Cushioned packaging", "Temperature control", "White-glove delivery", "Full insurance"] },
+  { id: "bulk", name: "Bulk / Industrial", icon: "🏭", multiplier: 0.7, description: "Optimized for large-volume or palletized cargo.", features: ["Palletized loading", "Forklift handling", "Warehouse pickup", "Volume discounts"] },
+];
+
 export const customerStats = {
   totalBookings: 24,
   activeShipments: 3,
