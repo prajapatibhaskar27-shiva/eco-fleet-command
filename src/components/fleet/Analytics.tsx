@@ -91,8 +91,8 @@ export default function DashboardOverview() {
           value={customerStats.activeShipments.toString()}
           label="Active Shipments"
           sub="In transit or confirmed"
-          iconBg="bg-blue-50"
-          iconColor="text-blue-600"
+          iconBg="bg-teal-50"
+          iconColor="text-teal-600"
           delay={0.05}
         />
         <StatCard
@@ -100,8 +100,8 @@ export default function DashboardOverview() {
           value={`$${customerStats.totalSpent.toLocaleString()}`}
           label="Total Spent"
           sub="Across all bookings"
-          iconBg="bg-purple-50"
-          iconColor="text-purple-600"
+          iconBg="bg-emerald-50"
+          iconColor="text-emerald-600"
           delay={0.1}
         />
         <StatCard
@@ -148,8 +148,8 @@ export default function DashboardOverview() {
                   <span className="text-[13px] font-mono font-semibold text-gray-900">{b.id}</span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide ${
                     b.status === "in-transit"
-                      ? "bg-blue-50 text-blue-600 border border-blue-100"
-                      : "bg-amber-50 text-amber-600 border border-amber-100"
+                      ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                      : "bg-teal-50 text-teal-600 border border-teal-100"
                   }`}>
                     {b.status}
                   </span>

@@ -14,6 +14,7 @@ import ShipmentHistory from "@/components/fleet/ShipmentTracker";
 import Notifications from "@/components/fleet/AlertsPanel";
 import Schedule from "@/components/fleet/Schedule";
 import Checkout from "@/components/fleet/Checkout";
+import { Plus } from "lucide-react";
 import { customerStats, notifications as demoNotifications } from "@/data/demo";
 import type { Booking, CatalogItem } from "@/data/demo";
 import {
@@ -135,7 +136,7 @@ function Sidebar({
 }
 
 /* ── Top Bar ────────────────────────────────────────────────────────────── */
-function TopBar({ view, onMenuToggle }: { view: View; onMenuToggle: () => void }) {
+function TopBar({ view, setView, onMenuToggle }: { view: View; setView: (v: View) => void; onMenuToggle: () => void }) {
   const titles: Record<View, string> = {
     dashboard: "Dashboard", bookings: "My Bookings", detail: "Booking Details",
     catalog: "Service Catalog", schedule: "New Booking", checkout: "Checkout",
@@ -151,22 +152,31 @@ function TopBar({ view, onMenuToggle }: { view: View; onMenuToggle: () => void }
         </button>
         <h1 className="text-[15px] font-semibold text-gray-900">{titles[view]}</h1>
       </div>
-      <div className="hidden sm:flex items-center gap-5 text-[13px]">
-        <div className="flex items-center gap-1.5">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-          </span>
-          <span className="text-emerald-600 font-semibold">{customerStats.activeShipments} active</span>
+      <div className="flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-5 text-[13px]">
+          <div className="flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span className="text-emerald-600 font-semibold">{customerStats.activeShipments} active</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <Package className="w-3.5 h-3.5" />
+            {customerStats.totalBookings} bookings
+          </div>
+          <div className="flex items-center gap-1.5 text-gray-500">
+            <Leaf className="w-3.5 h-3.5 text-emerald-500" />
+            {customerStats.co2Saved} kg saved
+          </div>
         </div>
-        <div className="flex items-center gap-1.5 text-gray-500">
-          <Package className="w-3.5 h-3.5" />
-          {customerStats.totalBookings} bookings
-        </div>
-        <div className="flex items-center gap-1.5 text-gray-500">
-          <Leaf className="w-3.5 h-3.5 text-emerald-500" />
-          {customerStats.co2Saved} kg saved
-        </div>
+        <button
+          onClick={() => setView("schedule")}
+          className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 text-white text-[13px] font-semibold hover:bg-emerald-600 active:bg-emerald-700 shadow-sm shadow-emerald-500/20 transition-all duration-150"
+        >
+          <Plus className="w-4 h-4" />
+          New Booking
+        </button>
       </div>
     </div>
   );
@@ -219,7 +229,7 @@ export default function Dashboard() {
     <div className="h-screen flex bg-gray-50 text-foreground overflow-hidden">
       <Sidebar view={view} setView={setView} collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
       <div className="flex-1 flex flex-col min-w-0">
-        <TopBar view={view} onMenuToggle={() => setMobileMenuOpen(true)} />
+        <TopBar view={view} setView={setView} onMenuToggle={() => setMobileMenuOpen(true)} />
         <main className="flex-1 overflow-hidden relative">
           <AnimatePresence mode="wait">
             <motion.div key={view} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }} className="h-full">
