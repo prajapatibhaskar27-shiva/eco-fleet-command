@@ -59,24 +59,35 @@ function CardFace({ m, compact }: { m: PaymentMethod; compact?: boolean }) {
 }
 
 /* ── Pay modal ──────────────────────────────────────────────────────────── */
-type PayTarget = { type: "single"; invoice: Invoice } | { type: "all" };
+type PayTarget = { type: "single"; invoice: Invoice } | { type: "all" } | { type: "custom" };
 
 function PayModal({
-  target, methods, amount, onClose, onPaid,
+  target, methods, balance, onClose, onPaid,
 }: {
-  target: PayTarget; methods: PaymentMethod[]; amount: number;
-  onClose: () => void; onPaid: (methodId: string) => void;
+  target: PayTarget; methods: PaymentMethod[]; balance: number;
+  onClose: () => void; onPaid: (methodId: string, amount: number) => void;
 }) {
+  const fixedAmount =
+    target.type === "single" ? target.invoice.amount - (target.invoice.paidAmount ?? 0)
+      : target.type === "all" ? balance
+        : 0;
+  const [amount, setAmount] = useState<string>(() => (fixedAmount > 0 ? fixedAmount.toFixed(2) : ""));
   const [methodId, setMethodId] = useState<string>(() => methods.find((m) => m.isDefault)?.id ?? methods[0]?.id ?? "");
   const [phase, setPhase] = useState<"select" | "processing" | "done">("select");
   const selectable = methods.filter((m) => m.brand !== "wallet");
-  const label = target.type === "single" ? target.invoice.id : "All outstanding invoices";
+  const amt = Number(amount) || 0;
+  const isCustom = target.type === "custom";
+  const label =
+    target.type === "single" ? target.invoice.id
+      : target.type === "all" ? "All outstanding invoices"
+        : "Custom payment to Eco Fleet Command";
+  const setAmountValue = (v: string) => setAmount(v.replace(/[^\d.]/g, "").replace(/(\.\d*)\..*/, "$1"));
 
   const handlePay = () => {
     setPhase("processing");
     setTimeout(() => {
       setPhase("done");
-      setTimeout(() => onPaid(methodId), 1500);
+      setTimeout(() => onPaid(methodId, amt), 1500);
     }, 1300);
   };
 
@@ -103,8 +114,46 @@ function PayModal({
             <p className="text-[12px] text-gray-400 dark:text-gray-500 mb-5">{label}</p>
 
             <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 p-4 mb-5 text-center">
-              <p className="text-[11px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold mb-1">Amount due</p>
-              <p className="text-[30px] font-bold text-gray-900 dark:text-gray-100 leading-none">{usd(amount)}</p>
+              <p className="text-[11px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold mb-1">
+                {isCustom ? "Set your own amount" : "Amount due"}
+              </p>
+              {isCustom ? (
+                <>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-[26px] font-bold text-gray-900 dark:text-gray-100">$</span>
+                    <input
+                      autoFocus
+                      inputMode="decimal"
+                      value={amount}
+                      onChange={(e) => setAmountValue(e.target.value)}
+                      placeholder="0.00"
+                      className="w-36 bg-transparent text-[30px] font-bold text-gray-900 dark:text-gray-100 text-center outline-none placeholder:text-emerald-300 dark:placeholder:text-emerald-900"
+                    />
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+                    {[50, 100, 250].map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => setAmount(String(v))}
+                        className="px-3 py-1.5 rounded-lg text-[12px] font-semibold bg-white dark:bg-white/[0.08] border border-emerald-100 dark:border-emerald-500/25 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-500/20 transition-all"
+                      >
+                        ${v}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => setAmount(balance.toFixed(2))}
+                      className="px-3 py-1.5 rounded-lg text-[12px] font-semibold bg-white dark:bg-white/[0.08] border border-emerald-100 dark:border-emerald-500/25 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-500/20 transition-all"
+                    >
+                      Full {usd(balance)}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-emerald-700/70 dark:text-emerald-300/70 mt-2.5">
+                    Partial payments are applied to your oldest invoices first.
+                  </p>
+                </>
+              ) : (
+                <p className="text-[30px] font-bold text-gray-900 dark:text-gray-100 leading-none">{usd(amt)}</p>
+              )}
             </div>
 
             <p className="text-[12px] font-medium text-gray-600 dark:text-gray-400 mb-2">Pay with</p>
@@ -135,10 +184,10 @@ function PayModal({
 
             <button
               onClick={handlePay}
-              disabled={!methodId}
+              disabled={!methodId || amt <= 0}
               className="w-full py-3 rounded-xl text-[14px] font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-sm shadow-emerald-500/20"
             >
-              Pay {usd(amount)}<Lock className="w-3.5 h-3.5" />
+              Pay {usd(amt)}<Lock className="w-3.5 h-3.5" />
             </button>
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 mt-3">
               <Shield className="w-3.5 h-3.5 text-emerald-500" />
@@ -165,7 +214,7 @@ function PayModal({
               <Check className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
             </motion.div>
             <h3 className="text-[17px] font-bold text-gray-900 dark:text-gray-100 mb-1">Payment successful</h3>
-            <p className="text-[13px] text-gray-500 dark:text-gray-400">{usd(amount)} paid to Eco Fleet Command.</p>
+            <p className="text-[13px] text-gray-500 dark:text-gray-400">{usd(amt)} paid to Eco Fleet Command.</p>
           </div>
         )}
       </motion.div>
@@ -213,6 +262,35 @@ function AddCardForm({ onAdd, onCancel }: { onAdd: (m: Omit<PaymentMethod, "id">
 }
 
 /* ── Billing ────────────────────────────────────────────────────────────── */
+/** Apply a payment across outstanding invoices (oldest first, or one invoice). */
+function applyPayment(
+  list: Invoice[], amount: number, brand?: PaymentMethodBrand, onlyId?: string,
+): { list: Invoice[]; applied: { invoiceId: string; amount: number }[] } {
+  const out = [...list];
+  const applied: { invoiceId: string; amount: number }[] = [];
+  let rem = amount;
+  const indices = onlyId
+    ? out.map((_, i) => i).filter((i) => out[i].id === onlyId && out[i].status !== "paid")
+    : out.map((_, i) => i).reverse().filter((i) => out[i].status !== "paid");
+  for (const i of indices) {
+    if (rem <= 0.001) break;
+    const inv = out[i];
+    const already = inv.paidAmount ?? 0;
+    const pay = Math.min(inv.amount - already, rem);
+    if (pay <= 0) continue;
+    rem -= pay;
+    const paidTotal = already + pay;
+    out[i] = {
+      ...inv,
+      paidAmount: paidTotal,
+      status: (paidTotal >= inv.amount - 0.001 ? "paid" : inv.status) as Invoice["status"],
+      paidWith: brand ?? inv.paidWith,
+    };
+    applied.push({ invoiceId: inv.id, amount: pay });
+  }
+  return { list: out, applied };
+}
+
 export default function Billing() {
   const [invList, setInvList] = useState<Invoice[]>(demoInvoices);
   const [methods, setMethods] = useState<PaymentMethod[]>(demoMethods);
@@ -223,38 +301,48 @@ export default function Billing() {
   const [autopay, setAutopay] = useState(true);
 
   const outstanding = useMemo(
-    () => invList.filter((i) => i.status !== "paid").reduce((s, i) => s + i.amount, 0),
+    () => invList.filter((i) => i.status !== "paid").reduce((s, i) => s + (i.amount - (i.paidAmount ?? 0)), 0),
     [invList]
   );
   const overdueList = invList.filter((i) => i.status === "overdue");
-  const paidThisYear = useMemo(() => customerStats.totalSpent, []);
+  const paidToDate =
+    customerStats.totalSpent +
+    records.filter((r) => r.date === "Today" && r.status === "completed").reduce((s, r) => s + r.amount, 0);
   const filtered = invList.filter((i) =>
     filter === "all" ? true : filter === "due" ? i.status !== "paid" : i.status === "paid"
   );
 
-  const modalAmount = !target ? 0 : target.type === "single" ? target.invoice.amount : outstanding;
-
-  const handlePaid = (methodId: string) => {
+  const handlePaid = (methodId: string, amountPaid: number) => {
     const method = methods.find((m) => m.id === methodId);
-    const methodName = method ? (method.brand === "wallet" ? "Eco Wallet" : `${brandInfo[method.brand].label} •• ${method.last4}`) : "Card";
-    const paidIds = target?.type === "single" ? [target.invoice.id] : invList.filter((i) => i.status !== "paid").map((i) => i.id);
+    const methodName = method
+      ? method.brand === "wallet"
+        ? "Eco Wallet"
+        : `${brandInfo[method.brand].label} •• ${method.last4}`
+      : "Card";
+    const onlyId = target?.type === "single" ? target.invoice.id : undefined;
+    const { list, applied } = applyPayment(invList, amountPaid, method?.brand, onlyId);
 
-    setInvList((prev) =>
-      prev.map((i) => (paidIds.includes(i.id) ? { ...i, status: "paid" as const, paidWith: method?.brand } : i))
-    );
-    setRecords((prev) => [
-      ...invList
-        .filter((i) => paidIds.includes(i.id))
-        .map((i, idx) => ({
-          id: `pay_new_${Date.now()}_${idx}`,
-          invoiceId: i.id,
-          date: "Today",
-          amount: i.amount,
-          method: methodName,
-          status: "completed" as const,
-        })),
-      ...prev,
-    ]);
+    setInvList(list);
+    const newRecords: PaymentRecord[] = applied.map((a, idx) => ({
+      id: `pay_new_${Date.now()}_${idx}`,
+      invoiceId: a.invoiceId,
+      date: "Today",
+      amount: a.amount,
+      method: methodName,
+      status: "completed",
+    }));
+    const leftover = amountPaid - applied.reduce((s, a) => s + a.amount, 0);
+    if (leftover > 0.001) {
+      newRecords.push({
+        id: `pay_new_${Date.now()}_credit`,
+        invoiceId: "Account credit",
+        date: "Today",
+        amount: leftover,
+        method: methodName,
+        status: "completed",
+      });
+    }
+    setRecords((prev) => [...newRecords, ...prev]);
     setTarget(null);
   };
 
@@ -280,15 +368,20 @@ export default function Billing() {
               <p className="text-[13px] text-emerald-100/90">
                 {outstandingCount === 0 ? "All invoices are settled 🎉" : `${outstandingCount} invoice${outstandingCount > 1 ? "s" : ""} awaiting payment · due to Eco Fleet Command`}
               </p>
-            </div>
-            <div className="flex flex-col gap-2 sm:items-end shrink-0">
-              <button
-                onClick={() => outstandingCount > 0 && setTarget({ type: "all" })}
-                disabled={outstandingCount === 0}
-                className="px-5 py-2.5 rounded-xl bg-white text-emerald-700 text-[13px] font-bold hover:bg-emerald-50 disabled:opacity-40 transition-all flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                Pay all<ArrowRight className="w-4 h-4" />
-              </button>
+            </div>              <div className="flex flex-col gap-2 sm:items-end shrink-0">
+                <button
+                  onClick={() => outstandingCount > 0 && setTarget({ type: "all" })}
+                  disabled={outstandingCount === 0}
+                  className="px-5 py-2.5 rounded-xl bg-white text-emerald-700 text-[13px] font-bold hover:bg-emerald-50 disabled:opacity-40 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                >
+                  Pay all<ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setTarget({ type: "custom" })}
+                  className="px-5 py-2.5 rounded-xl bg-white/15 border border-white/30 text-white text-[13px] font-semibold hover:bg-white/25 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <Wallet className="w-4 h-4" /> Custom amount
+                </button>
               <span className="text-[11px] text-emerald-100/80 flex items-center gap-1"><Shield className="w-3.5 h-3.5" /> Secure payments</span>
             </div>
           </div>
@@ -319,7 +412,7 @@ export default function Billing() {
           </p>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-gray-50 dark:bg-white/[0.04] border border-gray-100 dark:border-white/[0.06] p-3">
-              <p className="text-[16px] font-bold text-gray-900 dark:text-gray-100">{usd(paidThisYear)}</p>
+              <p className="text-[16px] font-bold text-gray-900 dark:text-gray-100">{usd(paidToDate)}</p>
               <p className="text-[10px] uppercase tracking-wider text-gray-400 mt-0.5">Paid to date</p>
             </div>
             <div className="rounded-xl bg-gray-50 dark:bg-white/[0.04] border border-gray-100 dark:border-white/[0.06] p-3">
@@ -388,8 +481,16 @@ export default function Billing() {
                   </div>
 
                   <div className="text-right shrink-0">
-                    <p className="text-[15px] font-bold text-gray-900 dark:text-gray-100">{usd(inv.amount)}</p>
-                    {inv.paidWith && <p className="text-[10px] text-gray-400 uppercase tracking-wide">via {inv.paidWith}</p>}
+                    <p className="text-[15px] font-bold text-gray-900 dark:text-gray-100">
+                      {usd(inv.status === "paid" ? inv.amount : inv.amount - (inv.paidAmount ?? 0))}
+                    </p>
+                    {inv.paidAmount ? (
+                      <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                        {usd(inv.paidAmount)} paid{inv.status !== "paid" ? ` of ${usd(inv.amount)}` : ""}
+                      </p>
+                    ) : inv.paidWith ? (
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wide">via {inv.paidWith}</p>
+                    ) : null}
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
@@ -521,7 +622,7 @@ export default function Billing() {
           <PayModal
             target={target}
             methods={methods}
-            amount={modalAmount}
+            balance={outstanding}
             onClose={() => setTarget(null)}
             onPaid={handlePaid}
           />

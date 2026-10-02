@@ -1129,6 +1129,7 @@ export interface Invoice {
   due: string;
   amount: number;
   status: InvoiceStatus;
+  paidAmount?: number;
   paidWith?: string;
 }
 
