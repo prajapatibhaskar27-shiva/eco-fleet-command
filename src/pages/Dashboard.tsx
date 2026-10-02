@@ -16,21 +16,19 @@ import Notifications from "@/components/fleet/AlertsPanel";
 import Schedule from "@/components/fleet/Schedule";
 import Checkout from "@/components/fleet/Checkout";
 import Billing from "@/components/fleet/Billing";
-import ActiveShipments from "@/components/ActiveShipments";
 import DisruptionAwareShipments from "@/components/ActiveShipmentsWrapper";
 import { Plus } from "lucide-react";
 import { customerStats, notifications as demoNotifications } from "@/data/demo";
-import { DisruptionProvider, useDisruption } from "@/contexts/DisruptionContext";
-import type { DisruptionZone } from "@/data/demo";
+import { DisruptionProvider } from "@/contexts/DisruptionContext";
 import type { Booking, CatalogItem } from "@/data/demo";
 import {
   Globe, Package, Search, BarChart3, Sparkles, Clock, Bell, Calendar,
-  LogOut, Leaf, ChevronLeft, ChevronRight, Menu, X, Ship, AlertTriangle, Wallet,
+  LogOut, Leaf, ChevronLeft, ChevronRight, Menu, Ship, Wallet, type LucideIcon,
 } from "lucide-react";
 
 type View = "dashboard" | "bookings" | "detail" | "catalog" | "schedule" | "checkout" | "history" | "billing" | "notifications" | "ecopilot" | "map" | "shipments";
 
-const navItems: { key: View; label: string; icon: any }[] = [
+const navItems: { key: View; label: string; icon: LucideIcon }[] = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
   { key: "bookings", label: "My Bookings", icon: Package },
   { key: "catalog", label: "Catalog", icon: Search },

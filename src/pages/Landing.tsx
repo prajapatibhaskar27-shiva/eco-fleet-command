@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Leaf, ArrowRight, MapPin, Bell, Wind, Zap, Shield, ChevronDown, Activity, Sparkles, Package, Calendar, Search, Menu, X } from "lucide-react";
+import { Leaf, ArrowRight, MapPin, Bell, Wind, Zap, Shield, ChevronDown, Activity, Sparkles, Package, Search, Menu, X, type LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 
-function FloatingIcon({ icon: Icon, x, y, size = 20, delay = 0, duration = 6 }: { icon: any; x: string; y: string; size?: number; delay?: number; duration?: number }) {
+function FloatingIcon({ icon: Icon, x, y, size = 20, delay = 0, duration = 6 }: { icon: LucideIcon; x: string; y: string; size?: number; delay?: number; duration?: number }) {
   return (
     <motion.div className="absolute pointer-events-none" style={{ left: x, top: y }} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: [0, 0.3, 0.15, 0.3, 0], scale: [0.8, 1, 0.95, 1, 0.8], y: [0, -12, 0, 12, 0] }} transition={{ duration, delay, repeat: Infinity, ease: "easeInOut" }}>
       <Icon style={{ width: size, height: size }} className="text-emerald-300/60" />

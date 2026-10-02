@@ -4,8 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Ship, Navigation, Fuel, Clock, AlertTriangle, Search,
-  ChevronDown, X, Anchor, Thermometer, MapPin, Eye,
-  Package, TrendingUp, Globe2, Activity,
+  X, Anchor, Thermometer, MapPin, Eye,
+  Package, TrendingUp, Globe2, Activity, type LucideIcon,
 } from "lucide-react";
 import {
   energyShipments as baseShipments,
@@ -240,7 +240,7 @@ function TelemetryModal({ shipment, onClose }: { shipment: EnergyShipment; onClo
   );
 }
 
-function TelemetryStat({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color: string }) {
+function TelemetryStat({ icon: Icon, label, value, color }: { icon: LucideIcon; label: string; value: string; color: string }) {
   return (
     <div className="p-3 rounded-xl bg-slate-800/50 border border-slate-700/40">
       <div className="flex items-center gap-1.5 mb-1">
@@ -261,7 +261,7 @@ export default function ActiveShipments({ disruption = "NONE" }: ActiveShipments
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "in-transit" | "rerouted" | "docked">("all");
   const [selectedShipment, setSelectedShipment] = useState<EnergyShipment | null>(null);
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
 
   // Live telemetry tick
   useEffect(() => {

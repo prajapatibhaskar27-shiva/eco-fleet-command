@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { bookings } from "@/data/demo";
-import { Package, MapPin, Clock, Hash, DollarSign, Leaf, Calendar, CheckCircle, ArrowLeft, Copy, Truck } from "lucide-react";
+import { Package, Clock, Hash, DollarSign, Leaf, Calendar, CheckCircle, ArrowLeft, Copy, Truck } from "lucide-react";
 
 interface Props { bookingId: string; onBack: () => void; }
 

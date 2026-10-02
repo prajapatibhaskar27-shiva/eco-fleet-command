@@ -45,7 +45,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       const formData = new FormData(event.currentTarget);
       await signIn("email-otp", formData);
       navigate(redirect);
-    } catch (error) {
+    } catch {
       setError("The verification code you entered is incorrect.");
       setIsLoading(false); setOtp("");
     }

@@ -3,16 +3,19 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  catalog, indiaCities, shipmentVehicles, shipmentTypes, seaPorts, cargoTypeLabels, shipCargoBookings,
+  catalog, indiaCities, shipmentVehicles, shipmentTypes, seaPorts, cargoTypeLabels,
   type CatalogItem, type IndiaCity, type CargoType,
 } from "@/data/demo";
 import {
-  Calendar, Clock, ChevronRight, ArrowLeft, Check, DollarSign, Leaf,
+  Clock, ChevronRight, ArrowLeft, Check, DollarSign, Leaf,
   MapPin, Search, Truck, Ship, Package, ArrowRight, Globe,
 } from "lucide-react";
 import IndiaMap from "./IndiaMap";
 
 interface ScheduleProps { preselectedServiceId?: string | null; onComplete: () => void; }
+
+// Stable confirmation reference (module scope keeps render pure).
+const BOOKING_REF = `ECN-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
 /* ── Searchable city dropdown ───────────────────────────────────────────── */
 function CityDropdown({
@@ -481,7 +484,7 @@ export default function Schedule({ preselectedServiceId, onComplete }: ScheduleP
 
                 {/* Continue button */}
                 <button
-                  onClick={() => setStep("confirm")}
+                  onClick={handleConfirm}
                   disabled={!canProceed}
                   className="w-full py-3 rounded-xl text-[14px] font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm shadow-emerald-200"
                 >
@@ -610,7 +613,7 @@ export default function Schedule({ preselectedServiceId, onComplete }: ScheduleP
                 )}
 
                 <button
-                  onClick={() => setStep("confirm")}
+                  onClick={handleConfirm}
                   disabled={!origin || !dest || !shipType || !date}
                   className="w-full py-3 rounded-xl text-[14px] font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm shadow-emerald-200"
                 >
@@ -639,7 +642,7 @@ export default function Schedule({ preselectedServiceId, onComplete }: ScheduleP
                 Pickup on {date} · ~{estDays} {estDays === 0.5 ? "day" : "days"} transit
               </p>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-[12px] text-gray-500 font-mono">
-                ECN-{Math.random().toString(36).slice(2, 8).toUpperCase()}
+                {BOOKING_REF}
               </div>
               <p className="text-[12px] text-gray-400 mt-4">Redirecting to your bookings…</p>
             </motion.div>

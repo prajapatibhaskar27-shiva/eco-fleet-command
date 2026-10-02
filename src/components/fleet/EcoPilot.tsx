@@ -42,7 +42,7 @@ export default function EcoPilot() {
     const q = text || input.trim(); if (!q) return;
     setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", content: q, timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }]);
     setInput(""); setIsTyping(true);
-    setTimeout(() => { setMessages((prev) => [...prev, { id: `a-${Date.now()}`, role: "assistant", content: getResponse(q), timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }]); setIsTyping(false); }, 600 + Math.random() * 400);
+    setTimeout(() => { setMessages((prev) => [...prev, { id: `a-${Date.now()}`, role: "assistant", content: getResponse(q), timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }]); setIsTyping(false); }, 600 + (q.length % 400));
   };
 
   const fmt = (t: string) => t.split("\n").map((line, i) => {

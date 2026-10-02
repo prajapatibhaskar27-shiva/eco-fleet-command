@@ -6,8 +6,8 @@ import {
   type ShipCargoBooking,
 } from "@/data/demo";
 import {
-  Ship, MapPin, Clock, Fuel, Leaf, Anchor, Package, Eye, ArrowRight,
-  TrendingUp, Thermometer, Weight, Timer,
+  Ship, MapPin, Clock, Fuel, Leaf, Anchor, Package, ArrowRight,
+  TrendingUp,
 } from "lucide-react";
 
 function ShipCargoRouteSVG({ booking }: { booking: ShipCargoBooking }) {

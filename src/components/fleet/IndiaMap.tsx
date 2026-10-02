@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { indiaCities, type IndiaCity } from "@/data/demo";
 
 interface IndiaMapProps {
@@ -30,14 +30,13 @@ function CityMarker({
   isOrigin,
   isDest,
   onClick,
-  type,
 }: {
   city: IndiaCity;
   isSelected: boolean;
   isOrigin: boolean;
   isDest: boolean;
   onClick: () => void;
-  type: "origin" | "destination" | "none";
+  type?: "origin" | "destination" | "none";
 }) {
   const [hovered, setHovered] = useState(false);
   const r = city.hub ? (isSelected ? 7 : 5) : (isSelected ? 5.5 : 3.5);

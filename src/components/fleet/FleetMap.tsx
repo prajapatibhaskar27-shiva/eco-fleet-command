@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 /* ── Fix Leaflet default icon path ──────────────────────────────────────── */
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
@@ -73,7 +73,6 @@ type FilterType = "all" | "truck" | "ship" | "warehouse" | "port" | "pickup" | "
 /* ── Main Component ─────────────────────────────────────────────────────── */
 export default function ShipmentMap({
   onSelectBooking,
-  selectedBookingId: _selectedBookingId,
 }: {
   onSelectBooking?: (b: Booking) => void;
   selectedBookingId?: string | null;

@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { notifications, type Notification } from "@/data/demo";
-import { Bell, Package, Truck, Tag, Settings, X, Check, CheckCheck } from "lucide-react";
-
-const typeConfig: Record<string, { icon: any; color: string; bg: string }> = {
+import { notifications, type Notification } from "@/data/demo";import { Bell, Package, Truck, Tag, Settings, X, Check, CheckCheck, type LucideIcon } from "lucide-react";
+const typeConfig: Record<string, { icon: LucideIcon; color: string; bg: string }> = {
   delivery: { icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
   booking: { icon: Package, color: "text-emerald-600", bg: "bg-emerald-50" },
   promo: { icon: Tag, color: "text-amber-600", bg: "bg-amber-50" },

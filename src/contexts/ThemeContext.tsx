@@ -21,7 +21,9 @@ function getInitialTheme(): Theme {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "dark" || stored === "light") return stored;
-  } catch {}
+  } catch {
+    // localStorage unavailable (private mode) — fall through to default.
+  }
   return "light";
 }
 
@@ -38,13 +40,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
     try {
       localStorage.setItem(STORAGE_KEY, theme);
-    } catch {}
+    } catch {
+      // Ignore quota/private-mode write failures.
+    }
   }, [theme]);
-
-  // On mount, sync from localStorage in case SSR or initial render differed
-  useEffect(() => {
-    setTheme(getInitialTheme());
-  }, []);
 
   const toggle = useCallback(() => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));

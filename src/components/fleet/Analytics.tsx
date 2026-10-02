@@ -5,7 +5,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
 import { customerStats, bookings, shipCargoBookings, cargoTypeLabels, cargoStatusLabels } from "@/data/demo";
-import { Package, Truck, DollarSign, Leaf, Ship, Anchor, TrendingUp, Fuel } from "lucide-react";
+import { Package, Truck, DollarSign, Leaf, Ship, Anchor, Fuel, type LucideIcon } from "lucide-react";
 
 const monthlySpending = [
   { month: "Mar", value: 180 },
@@ -25,12 +25,18 @@ const co2ByMonth = [
   { month: "Aug", value: 9.9 },
 ];
 
-const ChartTooltip = ({ active, payload, label }: any) => {
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: Array<{ name?: string; value?: number | string }>;
+  label?: string;
+}
+
+const ChartTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white dark:bg-[#1a1f2e] rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-black/40 border border-gray-100 dark:border-white/[0.08] px-3 py-2 text-xs">
       <p className="text-gray-500 font-medium mb-1">{label}</p>
-      {payload.map((p: any, i: number) => (
+      {payload.map((p, i) => (
         <p key={i} className="text-gray-900 font-semibold">
           {p.name}: {typeof p.value === "number" && p.value % 1 !== 0 ? p.value.toFixed(1) : p.value}
         </p>
@@ -42,7 +48,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
 function StatCard({
   icon: Icon, value, label, sub, iconBg, iconColor, delay,
 }: {
-  icon: any; value: string; label: string; sub: string; iconBg: string; iconColor: string; delay: number;
+  icon: LucideIcon; value: string; label: string; sub: string; iconBg: string; iconColor: string; delay: number;
 }) {
   return (
     <motion.div
