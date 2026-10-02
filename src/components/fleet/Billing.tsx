@@ -603,7 +603,7 @@ export default function Billing() {
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} width={40} />
                 <Tooltip
-                  formatter={(value: any) => [typeof value === "number" ? usd(value) : String(value), "Billed"]}
+                  formatter={(value) => [typeof value === "number" ? usd(value) : String(value), "Billed"]}
                   contentStyle={{
                     background: "#111827", border: "none", borderRadius: 12,
                     fontSize: 12, color: "#fff", padding: "8px 12px",
