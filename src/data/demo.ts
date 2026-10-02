@@ -1106,3 +1106,76 @@ export const energyShipments: EnergyShipment[] = [
     flag: "Singapore",
   },
 ];
+
+// ── Billing & Payments ──────────────────────────────────────────────────
+export type InvoiceStatus = "paid" | "due" | "overdue";
+export type PaymentMethodBrand = "visa" | "mastercard" | "amex" | "wallet";
+
+export interface PaymentMethod {
+  id: string;
+  brand: PaymentMethodBrand;
+  last4: string;
+  holder: string;
+  expiry: string;
+  isDefault: boolean;
+}
+
+export interface Invoice {
+  id: string;
+  bookingId: string;
+  serviceName: string;
+  description: string;
+  issued: string;
+  due: string;
+  amount: number;
+  status: InvoiceStatus;
+  paidWith?: string;
+}
+
+export interface PaymentRecord {
+  id: string;
+  invoiceId: string;
+  date: string;
+  amount: number;
+  method: string;
+  status: "completed" | "processing" | "refunded";
+}
+
+export const paymentMethods: PaymentMethod[] = [
+  { id: "pm_1", brand: "visa", last4: "4242", holder: "Jane Doe", expiry: "08 / 27", isDefault: true },
+  { id: "pm_2", brand: "mastercard", last4: "5518", holder: "Jane Doe", expiry: "11 / 26", isDefault: false },
+  { id: "pm_3", brand: "amex", last4: "3007", holder: "J. Doe", expiry: "02 / 28", isDefault: false },
+  { id: "pm_4", brand: "wallet", last4: "••••", holder: "Eco Wallet credit", expiry: "—", isDefault: false },
+];
+
+export const invoices: Invoice[] = [
+  { id: "INV-2098", bookingId: "ECO-4821", serviceName: "Eco Express", description: "Express delivery · San Francisco → Portland", issued: "Sep 28, 2026", due: "Oct 12, 2026", amount: 148.4, status: "due" },
+  { id: "INV-2091", bookingId: "ECO-4790", serviceName: "Green Freight", description: "Pallet freight · Chicago → Denver", issued: "Sep 20, 2026", due: "Oct 4, 2026", amount: 312.75, status: "due" },
+  { id: "INV-2074", bookingId: "ECO-4744", serviceName: "Solar Last-Mile", description: "EV last-mile · 6 parcels · Austin", issued: "Sep 8, 2026", due: "Sep 22, 2026", amount: 64.2, status: "overdue" },
+  { id: "INV-2066", bookingId: "ECO-4712", serviceName: "Eco Express", description: "Express delivery · Seattle → Boise", issued: "Sep 2, 2026", due: "Sep 16, 2026", amount: 96.5, status: "paid", paidWith: "visa" },
+  { id: "INV-2059", bookingId: "ECO-4688", serviceName: "Carbon-Neutral Air", description: "Air freight offset · LAX → JFK", issued: "Aug 24, 2026", due: "Sep 7, 2026", amount: 421.0, status: "paid", paidWith: "mastercard" },
+  { id: "INV-2043", bookingId: "ECO-4631", serviceName: "Green Freight", description: "Pallet freight · Dallas → Miami", issued: "Aug 11, 2026", due: "Aug 25, 2026", amount: 287.9, status: "paid", paidWith: "visa" },
+  { id: "INV-2030", bookingId: "ECO-4596", serviceName: "Eco Express", description: "Express delivery · Boston → NYC", issued: "Jul 29, 2026", due: "Aug 12, 2026", amount: 178.25, status: "paid", paidWith: "wallet" },
+  { id: "INV-2018", bookingId: "ECO-4550", serviceName: "Solar Last-Mile", description: "EV last-mile · 12 parcels · Portland", issued: "Jul 15, 2026", due: "Jul 29, 2026", amount: 139.0, status: "paid", paidWith: "visa" },
+];
+
+export const paymentHistory: PaymentRecord[] = [
+  { id: "pay_9", invoiceId: "INV-2066", date: "Sep 4, 2026", amount: 96.5, method: "Visa •• 4242", status: "completed" },
+  { id: "pay_8", invoiceId: "INV-2059", date: "Aug 26, 2026", amount: 421.0, method: "Mastercard •• 5518", status: "completed" },
+  { id: "pay_7", invoiceId: "INV-2043", date: "Aug 13, 2026", amount: 287.9, method: "Visa •• 4242", status: "completed" },
+  { id: "pay_6", invoiceId: "INV-2030", date: "Jul 31, 2026", amount: 178.25, method: "Eco Wallet", status: "completed" },
+  { id: "pay_5", invoiceId: "INV-2018", date: "Jul 17, 2026", amount: 139.0, method: "Visa •• 4242", status: "completed" },
+  { id: "pay_4", invoiceId: "INV-2004", date: "Jul 2, 2026", amount: 205.6, method: "Visa •• 4242", status: "completed" },
+  { id: "pay_3", invoiceId: "INV-1988", date: "Jun 18, 2026", amount: 248.0, method: "Mastercard •• 5518", status: "refunded" },
+  { id: "pay_2", invoiceId: "INV-1971", date: "Jun 3, 2026", amount: 312.4, method: "Visa •• 4242", status: "completed" },
+  { id: "pay_1", invoiceId: "INV-1954", date: "May 21, 2026", amount: 160.1, method: "Eco Wallet", status: "processing" },
+];
+
+export const monthlyBilling = [
+  { month: "May", value: 160.1 },
+  { month: "Jun", value: 560.4 },
+  { month: "Jul", value: 344.6 },
+  { month: "Aug", value: 708.9 },
+  { month: "Sep", value: 461.5 },
+  { month: "Oct", value: 0 },
+];

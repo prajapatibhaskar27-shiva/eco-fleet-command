@@ -15,6 +15,7 @@ import ShipmentHistory from "@/components/fleet/ShipmentTracker";
 import Notifications from "@/components/fleet/AlertsPanel";
 import Schedule from "@/components/fleet/Schedule";
 import Checkout from "@/components/fleet/Checkout";
+import Billing from "@/components/fleet/Billing";
 import ActiveShipments from "@/components/ActiveShipments";
 import DisruptionAwareShipments from "@/components/ActiveShipmentsWrapper";
 import { Plus } from "lucide-react";
@@ -24,10 +25,10 @@ import type { DisruptionZone } from "@/data/demo";
 import type { Booking, CatalogItem } from "@/data/demo";
 import {
   Globe, Package, Search, BarChart3, Sparkles, Clock, Bell, Calendar,
-  LogOut, Leaf, ChevronLeft, ChevronRight, Menu, X, Ship, AlertTriangle,
+  LogOut, Leaf, ChevronLeft, ChevronRight, Menu, X, Ship, AlertTriangle, Wallet,
 } from "lucide-react";
 
-type View = "dashboard" | "bookings" | "detail" | "catalog" | "schedule" | "checkout" | "history" | "notifications" | "ecopilot" | "map" | "shipments";
+type View = "dashboard" | "bookings" | "detail" | "catalog" | "schedule" | "checkout" | "history" | "billing" | "notifications" | "ecopilot" | "map" | "shipments";
 
 const navItems: { key: View; label: string; icon: any }[] = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -37,6 +38,7 @@ const navItems: { key: View; label: string; icon: any }[] = [
   { key: "map", label: "Tracking Map", icon: Globe },
   { key: "shipments", label: "Shipments", icon: Ship },
   { key: "history", label: "History", icon: Clock },
+  { key: "billing", label: "Billing", icon: Wallet },
   { key: "notifications", label: "Notifications", icon: Bell },
   { key: "ecopilot", label: "EcoPilot", icon: Sparkles },
 ];
@@ -147,7 +149,7 @@ function TopBar({ view, setView, onMenuToggle }: { view: View; setView: (v: View
   const titles: Record<View, string> = {
     dashboard: "Dashboard", bookings: "My Bookings", detail: "Booking Details",
     catalog: "Service Catalog", schedule: "New Booking", checkout: "Checkout",
-    history: "Shipment History", notifications: "Notifications", ecopilot: "EcoPilot",
+    history: "Shipment History", billing: "Billing & Payments", notifications: "Notifications", ecopilot: "EcoPilot",
     map: "Tracking Map", shipments: "Energy Shipments",
   };
 
@@ -242,6 +244,7 @@ function DashboardInner() {
       case "schedule": return <Schedule preselectedServiceId={preselectedServiceId} onComplete={handleScheduleComplete} />;
       case "checkout": return checkoutData ? <Checkout {...checkoutData} onComplete={handleCheckoutComplete} /> : <div className="p-6 text-sm text-gray-500">No checkout in progress.</div>;
       case "history": return <ShipmentHistory />;
+      case "billing": return <Billing />;
       case "notifications": return <Notifications />;
       case "ecopilot": return <EcoPilot />;
       case "shipments": return <DisruptionAwareShipments />;
