@@ -70,6 +70,17 @@ const statusColors: Record<string, string> = {
 
 type FilterType = "all" | "truck" | "ship" | "warehouse" | "port" | "pickup" | "delivery";
 
+// City coordinates for booking routes (static, module scope keeps it referentially stable)
+const cityCoords: Record<string, [number, number]> = {
+  "San Francisco, CA": [37.7749, -122.4194], "Portland, OR": [45.5152, -122.6784],
+  "Austin, TX": [30.2672, -97.7431], "Denver, CO": [39.7392, -104.9903],
+  "Seattle, WA": [47.6062, -122.3321], "Los Angeles, CA": [34.0522, -118.2437],
+  "Phoenix, AZ": [33.4484, -112.074], "New York, NY": [40.7128, -74.006],
+  "Boston, MA": [42.3601, -71.0589], "Chicago, IL": [41.8781, -87.6298],
+  "Miami, FL": [25.7617, -80.1918], "Orlando, FL": [28.5383, -81.3792],
+  "Salt Lake City, UT": [40.7608, -111.891], "Boise, ID": [43.615, -116.2023],
+};
+
 /* ── Main Component ─────────────────────────────────────────────────────── */
 export default function ShipmentMap({
   onSelectBooking,
@@ -84,17 +95,6 @@ export default function ShipmentMap({
   // Derive route data from active bookings
   const activeBookings = bookings.filter((b) => ["in-transit", "confirmed"].includes(b.status));
   const activeCargo = shipCargoBookings.filter((c) => c.status === "in-transit");
-
-  // City coordinates for booking routes
-  const cityCoords: Record<string, [number, number]> = {
-    "San Francisco, CA": [37.7749, -122.4194], "Portland, OR": [45.5152, -122.6784],
-    "Austin, TX": [30.2672, -97.7431], "Denver, CO": [39.7392, -104.9903],
-    "Seattle, WA": [47.6062, -122.3321], "Los Angeles, CA": [34.0522, -118.2437],
-    "Phoenix, AZ": [33.4484, -112.074], "New York, NY": [40.7128, -74.006],
-    "Boston, MA": [42.3601, -71.0589], "Chicago, IL": [41.8781, -87.6298],
-    "Miami, FL": [25.7617, -80.1918], "Orlando, FL": [28.5383, -81.3792],
-    "Salt Lake City, UT": [40.7608, -111.891], "Boise, ID": [43.615, -116.2023],
-  };
 
   const getRoute = useCallback((b: Booking): [number, number][] => {
     const o = cityCoords[b.origin];
